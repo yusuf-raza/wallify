@@ -5,12 +5,9 @@ import 'package:wallify/infrastructure/navigation/navigation.dart';
 import 'package:wallify/infrastructure/navigation/routes.dart';
 import 'package:wallify/infrastructure/theme/theme_controller.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
-import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail.controller.dart';
 
 void main() async {
   final String initialRoute = await Routes.initialRoute;
-
-  Get.put(WallpaperDetailController());
 
   runApp(MyApp(initialRoute));
 }
