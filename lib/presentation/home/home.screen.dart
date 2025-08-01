@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:wallify/infrastructure/common/custom_app_bar.dart';
 import 'package:wallify/infrastructure/common/grid_item.dart';
-import 'package:wallify/infrastructure/theme/theme_controller.dart';
+import 'package:wallify/infrastructure/navigation/routes.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
-import 'package:wallify/presentation/wallpaper_detail/wallpaper_detail.screen.dart';
 
 import 'controllers/home.controller.dart';
 
@@ -13,9 +12,9 @@ class HomeScreen extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    Get.lazyPut(() => ThemeController());
+    // Get.lazyPut(() => ThemeController());
     return Scaffold(
-      appBar: const CustomAppBar(title: 'WallApp.'),
+      appBar: const CustomAppBar(),
       body: GridView.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 3, // Number of items per row
@@ -29,7 +28,7 @@ class HomeScreen extends GetView<HomeController> {
           return GridItem(
             index: index,
             onTap: () {
-              Get.to<WallpaperDetailScreen>(const WallpaperDetailScreen());
+              Get.toNamed(Routes.WALLPAPER_DETAIL);
             },
           );
         },
