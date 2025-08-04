@@ -39,6 +39,8 @@ dependencies:
   salomon_bottom_bar: ^3.3.2
   cached_network_image: ^3.4.1
   carousel_slider: ^5.1.1
+  fluttertoast: ^8.2.12
+  connectivity_plus: ^6.1.4
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:wallify/infrastructure/app_strings.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/theme_controller.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
