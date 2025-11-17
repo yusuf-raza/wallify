@@ -352,7 +352,7 @@ class ApiWrapper {
     try {
       //final String? authKey = await SharedPrefs().getAuthToken();
 
-      final String urlString = '${Endpoints.baseURL}$url';
+      final String urlString = '${Endpoints.baseURL}';
 
       LoggerService.logFatal('URL $urlString');
 
@@ -366,12 +366,10 @@ class ApiWrapper {
       final http.Response response = await http.get(
         Uri.parse(urlString),
         headers: <String, String>{
-          'Authorization': '${Endpoints.apiKey}',
+          // 'Authorization': '${Endpoints.apiKey}',
           'Content-Type': 'application/json',
         },
       );
-
-      LoggerService.logFatal('${response.body}');
 
       // Step 4: Log and parse the response
       LoggerService.logInfo(

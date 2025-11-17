@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:provider/provider.dart';
+import 'package:wallify/infrastructure/common/custom_app_bar.dart';
+import 'package:wallify/presentation/wallpaper_category/controllers/wallpaper_category_view_model.dart';
 
-import '../../infrastructure/common/custom_app_bar.dart';
-import 'controllers/wallpaper_category.controller.dart';
-
-class WallpaperCategoryScreen extends GetView<WallpaperCategoryController> {
+class WallpaperCategoryScreen extends StatelessWidget {
   const WallpaperCategoryScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    final wallpaperCategoryController = Provider.of<CategoryViewModel>(context);
     return const Scaffold(
       appBar: CustomAppBar(),
       body: Center(

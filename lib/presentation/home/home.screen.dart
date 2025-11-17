@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:wallify/infrastructure/common/custom_app_bar.dart';
 import 'package:wallify/infrastructure/common/grid_item.dart';
-import 'package:wallify/infrastructure/navigation/routes.dart';
+import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
+import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
-import 'controllers/home.controller.dart';
-
-class HomeScreen extends GetView<HomeController> {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Get.lazyPut(() => ThemeController());
+    final HomeViewModel homeController = Provider.of<HomeViewModel>(context);
     return Scaffold(
       appBar: const CustomAppBar(),
       body: GridView.builder(
@@ -28,7 +28,7 @@ class HomeScreen extends GetView<HomeController> {
           return GridItem(
             index: index,
             onTap: () {
-              Get.toNamed(Routes.WALLPAPER_DETAIL);
+              context.go(AppRouter.wallpaperDetail);
             },
           );
         },

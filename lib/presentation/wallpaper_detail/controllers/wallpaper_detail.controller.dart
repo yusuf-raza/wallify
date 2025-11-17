@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:flutter/foundation.dart';
 
 import '../slider_item.dart';
 
-class WallpaperDetailController extends GetxController {
-  //TODO: Implement WallpaperDetailController
+class WallpaperDetailController extends ChangeNotifier {
+  WallpaperDetailController() {
+    imageSliders = List<Widget>.generate(imgList.length, (int index) {
+      return SliderItem(index: index, imgList: imgList);
+    });
+  }
 
   final List<String> imgList = <String>[
     'https://images.unsplash.com/photo-1520342868574-5fa3804e551c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=6ff92caffcdd63681a35134a6770ed3b&auto=format&fit=crop&w=1951&q=80',
@@ -16,22 +20,4 @@ class WallpaperDetailController extends GetxController {
   ];
 
   late final List<Widget> imageSliders;
-
-  @override
-  void onInit() {
-    super.onInit();
-    imageSliders = List<Widget>.generate(imgList.length, (int index) {
-      return SliderItem(index: index, imgList: imgList);
-    });
-  }
-
-  @override
-  void onReady() {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
 }
