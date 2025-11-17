@@ -13,21 +13,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return AppBar(
       centerTitle: true,
-      title:
-          // AnimatedTextKit(
-          //   animatedTexts: <AnimatedText>[
-          //     ColorizeAnimatedText(
-          //       AppStrings.appTitle,
-          //       textStyle: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-          //       colors: <Color>[Colors.purple, Colors.blue, Colors.yellow, Colors.red],
-          //     ),
-          //   ],
-          //   isRepeatingAnimation: false,
-          // ),
-          Text(
-            AppStrings.appTitle,
-            style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-          ),
+      title: Text(
+        AppStrings.appTitle,
+        style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
+      ),
       actions: <Widget>[
         IconButton(
           icon: const Icon(Icons.dark_mode, size: 25),
