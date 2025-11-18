@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 
 class GridItem extends StatelessWidget {
-  const GridItem({super.key, required this.index, required this.onTap});
+  const GridItem({super.key, required this.wallpaper, required this.onTap});
 
-  final int index;
+  final WallhavenWallpaper wallpaper;
   final VoidCallback onTap;
 
   @override
@@ -11,9 +12,23 @@ class GridItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        //color: Colors.blueAccent,
-        child: Center(
-          child: Text('Item $index', style: const TextStyle(color: Colors.black, fontSize: 16)),
+        clipBehavior: Clip.antiAlias,
+        child: Image.network(
+          wallpaper.thumbs?.original ?? '',
+          fit: BoxFit.cover,
+          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+            if (loadingProgress == null) {
+              return child;
+            }
+            return Center(
+              child: CircularProgressIndicator(
+                value: loadingProgress.expectedTotalBytes != null
+                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                    : null,
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.error)),
         ),
       ),
     );

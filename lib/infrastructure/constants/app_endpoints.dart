@@ -7,5 +7,5 @@ class Endpoints {
   static final String baseURL = 'https://wallhaven.cc/api/v1/search';
 
   static final String apiKey = 'Ko9izX0mgnZqYQwVx3KjrMlxHEBZcA2K'; //wall haven api key
-  static final String apiUrl = 'v1/curated?per_page=20';
+  // static final String apiUrl = 'v1/curated?per_page=20';
 }

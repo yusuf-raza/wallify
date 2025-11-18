@@ -9,16 +9,16 @@ class WallpaperApi {
     required void Function(List<WallhavenWallpaper>) successCallback,
     required void Function(String error) failureCallback,
   }) async {
-    await ApiWrapper().getApi(url: Endpoints.apiUrl).then((ApiResponse? response) {
+    await ApiWrapper().getApi(url: '${Endpoints.baseURL}').then((ApiResponse? response) {
       if (response == null) {
-        failureCallback('API response is null.');
+        failureCallback('API response is null. ${response}');
         return;
       }
       if (response.data == null) {
         failureCallback('API response data is null.');
         return;
       }
-      final List<WallhavenWallpaper> wallpapers = (response.data as List<dynamic>)
+      final List<WallhavenWallpaper> wallpapers = (response.data['data'] as List<dynamic>)
           .map((e) => WallhavenWallpaper.fromJson(e as Map<String, dynamic>))
           .toList();
       successCallback(wallpapers);

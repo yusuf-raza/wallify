@@ -341,7 +341,6 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:wallify/data/api/api_service/api_response.dart';
-import 'package:wallify/infrastructure/constants/app_endpoints.dart';
 import 'package:wallify/infrastructure/utils/general_utils.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 
@@ -350,9 +349,7 @@ class ApiWrapper {
 
   Future<ApiResponse?> getApi({required String url}) async {
     try {
-      //final String? authKey = await SharedPrefs().getAuthToken();
-
-      final String urlString = '${Endpoints.baseURL}';
+      final String urlString = url;
 
       LoggerService.logFatal('URL $urlString');
 
@@ -365,21 +362,35 @@ class ApiWrapper {
       // Step 3: Perform HTTP GET request
       final http.Response response = await http.get(
         Uri.parse(urlString),
-        headers: <String, String>{
-          // 'Authorization': '${Endpoints.apiKey}',
-          'Content-Type': 'application/json',
-        },
+        headers: <String, String>{'Content-Type': 'application/json'},
       );
 
       // Step 4: Log and parse the response
       LoggerService.logInfo(
         'URL $url\nstatus code ${response.statusCode}\nResponse getApi: ${response.body}',
       );
-      final Map<String, dynamic> data = _decoder.convert(response.body) as Map<String, dynamic>;
-      return ApiResponse.fromJson(data);
+
+      if (response.statusCode >= 200 && response.statusCode < 300) {
+        try {
+          final Map<String, dynamic> data = _decoder.convert(response.body) as Map<String, dynamic>;
+          return ApiResponse.fromJson(data);
+        } catch (e) {
+          LoggerService.logError('getApi Failed to parse response: $e');
+          return ApiResponse(success: false, message: 'Failed to parse API response.');
+        }
+      } else if (response.statusCode == 404) {
+        LoggerService.logError('getApi Resource not found: $urlString');
+        return ApiResponse(success: false, message: 'Resource not found.');
+      } else {
+        LoggerService.logError('getApi API error: $urlString, status=${response.statusCode}');
+        return ApiResponse(
+          success: false,
+          message: 'API error with status code ${response.statusCode}.',
+        );
+      }
     } catch (e) {
       LoggerService.logError('Error in getApi: $e');
-      return null;
+      return ApiResponse(success: false, message: 'Network error: $e');
     }
   }
 }

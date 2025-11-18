@@ -4,14 +4,14 @@ class ApiResponse {
   factory ApiResponse.fromJson(dynamic json) {
     final ApiResponse model = ApiResponse(
       success: json['success'] as bool?,
-      data: json['data'], // Safely cast to Map<String, dynamic>?
+      data: json, // Assign the entire JSON object to data
       message: json['message'] as String? ?? '',
     );
 
     return model;
   }
   bool? success;
-  List<dynamic>? data; // Changed to List<dynamic>?
+  dynamic data; // Changed to dynamic
   String? message;
   Map<String, dynamic>? errors;
 }
