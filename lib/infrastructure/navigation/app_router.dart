@@ -37,7 +37,12 @@ class AppRouter {
       ),
       GoRoute(
         path: wallpaperDetail,
-        builder: (BuildContext context, GoRouterState state) => const WallpaperDetailScreen(),
+        builder: (BuildContext context, GoRouterState state) {
+          final Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+          final int initialIndex = data['initialIndex'];
+
+          return WallpaperDetailScreen(initialIndex: initialIndex);
+        },
       ),
       GoRoute(
         path: wallpaperCategory,

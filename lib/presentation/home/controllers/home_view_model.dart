@@ -7,6 +7,8 @@ class HomeViewModel extends ChangeNotifier {
   int _count = 0;
   int get count => _count;
 
+  bool gettingWallpapers = false;
+
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
 
   void increment() {
@@ -15,22 +17,22 @@ class HomeViewModel extends ChangeNotifier {
   }
 
   Future<void> getWallpapers() async {
-    //fetchingProjects.value = true;
-    await WallpaperApi.getWallpapers(
-      successCallback: (List<WallhavenWallpaper> p1) {
-        wallpapers = p1;
+    gettingWallpapers = true;
+    notifyListeners();
 
-        LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
-        notifyListeners();
-      },
-      failureCallback: (String error) {},
-      // successCallback: (Wallpaper wallpaper) {
-      //   LoggerService.logInfo('aaaaa   ${wallpaper.toString()}');
-      // },
-      // failureCallback: (String error) {
-      //   //Utilities.showToast(toastMsg: error, isSuccess: false);
-      //   LoggerService.logError('updateUserProfile failureCallback: $error');
-      // },
-    );
+    try {
+      await WallpaperApi.getWallpapers(
+        successCallback: (List<WallhavenWallpaper> p1) {
+          wallpapers = p1;
+          LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
+        },
+        failureCallback: (String error) {},
+      );
+    } catch (e) {
+      LoggerService.logError('error in getWallpapers() $e');
+    } finally {
+      gettingWallpapers = false;
+      notifyListeners();
+    }
   }
 }
