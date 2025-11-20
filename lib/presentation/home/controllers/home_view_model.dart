@@ -4,34 +4,52 @@ import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  int _count = 0;
-  int get count => _count;
+  final WallpaperApi _wallpaperApi;
 
+  HomeViewModel() : _wallpaperApi = WallpaperApi();
+
+  int _currentPage = 1;
   bool gettingWallpapers = false;
+  bool loadingMoreWallpapers = false;
 
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
 
-  void increment() {
-    _count++;
-    notifyListeners();
-  }
-
   Future<void> getWallpapers() async {
     gettingWallpapers = true;
+    _currentPage = 1;
+    wallpapers.clear();
     notifyListeners();
 
     try {
-      await WallpaperApi.getWallpapers(
-        successCallback: (List<WallhavenWallpaper> p1) {
-          wallpapers = p1;
-          LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
-        },
-        failureCallback: (String error) {},
-      );
+      final List<WallhavenWallpaper> newWallpapers =
+          await _wallpaperApi.getWallpapers(page: _currentPage);
+      wallpapers.addAll(newWallpapers);
+      LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
     } catch (e) {
       LoggerService.logError('error in getWallpapers() $e');
     } finally {
       gettingWallpapers = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadMoreWallpapers() async {
+    if (loadingMoreWallpapers) return;
+
+    loadingMoreWallpapers = true;
+    notifyListeners();
+
+    try {
+      _currentPage++;
+      final List<WallhavenWallpaper> newWallpapers =
+          await _wallpaperApi.getWallpapers(page: _currentPage);
+      wallpapers.addAll(newWallpapers);
+      LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
+    } catch (e) {
+      _currentPage--; // revert page number on error
+      LoggerService.logError('error in loadMoreWallpapers() $e');
+    } finally {
+      loadingMoreWallpapers = false;
       notifyListeners();
     }
   }

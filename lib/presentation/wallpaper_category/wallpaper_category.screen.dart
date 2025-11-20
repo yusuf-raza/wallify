@@ -7,7 +7,9 @@ class WallpaperCategoryScreen extends StatelessWidget {
   const WallpaperCategoryScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final wallpaperCategoryController = Provider.of<CategoryViewModel>(context);
+    final WallpaperCategoryViewModel categoryViewModel = Provider.of<WallpaperCategoryViewModel>(
+      context,
+    );
     return const Scaffold(
       appBar: CustomAppBar(),
       body: Center(

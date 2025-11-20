@@ -4,24 +4,31 @@ import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_endpoints.dart';
 
 class WallpaperApi {
-  ///gets user profile and returns UserProfile
-  static Future<void> getWallpapers({
-    required void Function(List<WallhavenWallpaper>) successCallback,
-    required void Function(String error) failureCallback,
+  late final ApiWrapper _apiWrapper;
+
+  WallpaperApi() : _apiWrapper = ApiWrapper();
+
+  Future<List<WallhavenWallpaper>> getWallpapers({
+    // String q = 'general',
+    // String categories = '111',
+    // String purity = '100',
+    // String sorting = 'date_added',
+    // String order = 'desc',
+    int page = 1,
   }) async {
-    await ApiWrapper().getApi(url: '${Endpoints.baseURL}').then((ApiResponse? response) {
-      if (response == null) {
-        failureCallback('API response is null. ${response}');
-        return;
-      }
-      if (response.data == null) {
-        failureCallback('API response data is null.');
-        return;
-      }
-      final List<WallhavenWallpaper> wallpapers = (response.data['data'] as List<dynamic>)
-          .map((e) => WallhavenWallpaper.fromJson(e as Map<String, dynamic>))
-          .toList();
-      successCallback(wallpapers);
-    });
+    final Uri uri = Uri.parse(Endpoints.baseURL);
+
+    final ApiResponse? response = await _apiWrapper.getApi(url: uri.toString());
+
+    if (response == null) {
+      throw Exception('Failed to load wallpapers');
+    }
+
+    if (response.data == null) {
+      throw Exception('Failed to load wallpapers: data is null');
+    }
+
+    final List<dynamic> data = response.data['data'] as List<dynamic>;
+    return data.map((dynamic e) => WallhavenWallpaper.fromJson(e as Map<String, dynamic>)).toList();
   }
 }

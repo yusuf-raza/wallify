@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/presentation/base/base.screen.dart';
 import 'package:wallify/presentation/favourite/favourite.screen.dart';
 import 'package:wallify/presentation/home/home.screen.dart';
 import 'package:wallify/presentation/splash/splash.screen.dart';
 import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
 import 'package:wallify/presentation/wallpaper_detail/wallpaper_detail.screen.dart';
+import 'package:wallify/presentation/wallpaper_detail/wallpaper_detail_screen_new.dart';
 
 class AppRouter {
   static const String splash = '/';
@@ -14,6 +16,8 @@ class AppRouter {
   static const String favourite = '/favourite';
   static const String wallpaperDetail = '/wallpaper-detail';
   static const String wallpaperCategory = '/wallpaper-category';
+  static const String wallpaperDetailNew = '/wallpaper-detail-screen-new';
+
   static const String counter = '/counter';
 
   static final GoRouter router = GoRouter(
@@ -39,14 +43,39 @@ class AppRouter {
         path: wallpaperDetail,
         builder: (BuildContext context, GoRouterState state) {
           final Map<String, dynamic> data = state.extra as Map<String, dynamic>;
-          final int initialIndex = data['initialIndex'];
+          final WallhavenWallpaper wallpaper = data['wallpaper'] as WallhavenWallpaper;
+          final List<WallhavenWallpaper> wallpapers =
+              data['wallpapers'] as List<WallhavenWallpaper>;
 
-          return WallpaperDetailScreen(initialIndex: initialIndex);
+          return WallpaperDetailScreen(wallpaper: wallpaper, wallpapers: wallpapers);
         },
       ),
       GoRoute(
         path: wallpaperCategory,
         builder: (BuildContext context, GoRouterState state) => const WallpaperCategoryScreen(),
+      ),
+
+      GoRoute(
+        path: wallpaperDetailNew,
+        builder: (BuildContext context, GoRouterState state) {
+          final Map<String, dynamic> data = state.extra as Map<String, dynamic>;
+          final String imgUrl = data['imgUrl'] as String;
+          final String category = data['category'] as String;
+          final int dimensionX = data['dimensionX'] as int;
+          final int dimensionY = data['dimensionY'] as int;
+          final List<dynamic> colors = data['colors'];
+
+          final int size = data['size'] as int;
+
+          return WallpaperDetailScreenNew(
+            imgUrl: imgUrl,
+            category: category,
+            dimensionX: dimensionX,
+            size: size,
+            dimensionY: dimensionY,
+            colors: colors,
+          );
+        },
       ),
     ],
   );

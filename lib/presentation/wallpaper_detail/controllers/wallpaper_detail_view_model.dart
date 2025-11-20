@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../slider_item.dart';
 
-class WallpaperDetailController extends ChangeNotifier {
-  WallpaperDetailController() {
+class WallpaperDetailViewModel extends ChangeNotifier {
+  WallpaperDetailViewModel() {
     imageSliders = List<Widget>.generate(imgList.length, (int index) {
       return SliderItem(index: index, imgList: imgList);
     });

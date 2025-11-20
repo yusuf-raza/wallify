@@ -9,9 +9,9 @@ import 'package:wallify/presentation/favourite/controllers/favourite_view_model.
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 import 'package:wallify/presentation/splash/controllers/splash_view_model.dart';
 import 'package:wallify/presentation/wallpaper_category/controllers/wallpaper_category_view_model.dart';
-import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail.controller.dart';
+import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 
-void main() async {
+void main() {
   runApp(
     MultiProvider(
       providers: <SingleChildWidget>[
@@ -19,8 +19,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => FavouriteViewModel()),
         ChangeNotifierProvider(create: (_) => HomeViewModel()),
         ChangeNotifierProvider(create: (_) => SplashViewModel()),
-        ChangeNotifierProvider(create: (_) => CategoryViewModel()),
-        ChangeNotifierProvider(create: (_) => WallpaperDetailController()),
+        ChangeNotifierProvider(create: (_) => WallpaperCategoryViewModel()),
+        ChangeNotifierProvider(create: (_) => WallpaperDetailViewModel()),
         ChangeNotifierProvider(create: (_) => ThemeViewModel()),
       ],
       child: const MyApp(),
@@ -41,6 +41,10 @@ class MyApp extends StatelessWidget {
           themeMode: themeController.themeMode,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
+          builder: (context, child) {
+            Responsive.init(context);
+            return child!;
+          },
         );
       },
     );

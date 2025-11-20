@@ -4,20 +4,20 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
-import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
 
 class WallpaperDetailScreen extends StatelessWidget {
-  const WallpaperDetailScreen({super.key, required this.initialIndex});
+  const WallpaperDetailScreen({super.key, required this.wallpaper, required this.wallpapers});
 
-  final int initialIndex;
+  final WallhavenWallpaper wallpaper;
+  final List<WallhavenWallpaper> wallpapers;
+
   @override
   Widget build(BuildContext context) {
-    final HomeViewModel homeViewModel = Provider.of<HomeViewModel>(context);
+    final int initialIndex = wallpapers.indexOf(wallpaper);
 
     return Scaffold(
       appBar: AppBar(
@@ -33,7 +33,7 @@ class WallpaperDetailScreen extends StatelessWidget {
       body: Column(
         children: <Widget>[
           CarouselSlider(
-            items: homeViewModel.wallpapers
+            items: wallpapers
                 .map(
                   (WallhavenWallpaper wallpaper) => Stack(
                     fit: StackFit.expand,
@@ -50,13 +50,16 @@ class WallpaperDetailScreen extends StatelessWidget {
                           alignment: Alignment.centerRight,
                           height: 50.h,
                           decoration: BoxDecoration(
-                            color: Colors.black.withOpacity(.3),
-                            borderRadius: BorderRadius.only(
+                            color: Colors.black.withOpacity(.1),
+                            borderRadius: const BorderRadius.only(
                               bottomLeft: Radius.circular(20),
                               bottomRight: Radius.circular(20),
                             ),
                           ),
-                          child: IconButton(onPressed: () {}, icon: Icon(Icons.favorite_border)),
+                          child: IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.favorite_border),
+                          ),
                         ),
                       ),
                     ],
@@ -74,20 +77,55 @@ class WallpaperDetailScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: .center,
             children: <Widget>[
-              IconButton(onPressed: () {}, icon: const Icon(Icons.download)),
-              IconButton(
-                onPressed: () async {
-                  final String imageUrl = 'https://picsum.photos/200/300';
-                  final File file = await DefaultCacheManager().getSingleFile(imageUrl);
+              Container(
+                decoration: const BoxDecoration(color: Colors.purple),
+                child: Column(
+                  children: <Widget>[
+                    IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () async {
+                        final String imageUrl = wallpaper.url!;
 
-                  final int location = WallpaperManagerPlus.homeScreen;
+                        // download the image file from cache/network
+                        final File file = await DefaultCacheManager().getSingleFile(imageUrl);
 
-                  await WallpaperManagerPlus().setWallpaper(file.path, location);
-                },
-                icon: const Icon(Icons.home),
+                        final int location = WallpaperManagerPlus.homeScreen;
+
+                        // <-- FIXED: pass the File, not the path
+                        await WallpaperManagerPlus().setWallpaper(file, location);
+                      },
+                      icon: const Icon(Icons.home),
+                    ),
+                    const Text('Home'),
+                  ],
+                ),
               ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.lock_sharp)),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.check)),
+              Container(
+                decoration: const BoxDecoration(color: Colors.pink),
+                child: Column(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.lock_sharp),
+                      padding: EdgeInsets.zero,
+                    ),
+                    const Text('Both'),
+                  ],
+                ),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Colors.orange),
+                child: Column(
+                  children: <Widget>[
+                    IconButton(
+                      onPressed: () {},
+                      icon: const Icon(Icons.phone_android),
+                      padding: EdgeInsets.zero,
+                    ),
+                    const Text('Both'),
+                  ],
+                ),
+              ),
             ],
           ),
         ],

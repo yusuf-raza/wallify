@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-class CategoryViewModel extends ChangeNotifier {
+class WallpaperCategoryViewModel extends ChangeNotifier {
   int _count = 0;
   int get count => _count;
 

@@ -28,7 +28,8 @@ class GridItem extends StatelessWidget {
               ),
             );
           },
-          errorBuilder: (context, error, stackTrace) => const Center(child: Icon(Icons.error)),
+          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) =>
+              const Center(child: Icon(Icons.error)),
         ),
       ),
     );
