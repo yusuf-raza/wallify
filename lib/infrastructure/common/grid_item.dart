@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 
@@ -13,22 +14,19 @@ class GridItem extends StatelessWidget {
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        child: Image.network(
-          wallpaper.thumbs?.original ?? '',
+        child: CachedNetworkImage(
+          imageUrl: wallpaper.thumbs?.large ?? '',
           fit: BoxFit.cover,
-          loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-            if (loadingProgress == null) {
-              return child;
-            }
-            return Center(
-              child: CircularProgressIndicator(
-                value: loadingProgress.expectedTotalBytes != null
-                    ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                    : null,
-              ),
-            );
-          },
-          errorBuilder: (BuildContext context, Object error, StackTrace? stackTrace) =>
+          progressIndicatorBuilder:
+              (BuildContext context, String url, DownloadProgress downloadProgress) {
+                return Center(
+                  child: LinearProgressIndicator(
+                    value: downloadProgress.progress,
+                    color: Color(int.parse('0xFF${wallpaper!.colors![0].replaceFirst('#', '')}')),
+                  ),
+                );
+              },
+          errorWidget: (BuildContext context, String url, Object error) =>
               const Center(child: Icon(Icons.error)),
         ),
       ),
