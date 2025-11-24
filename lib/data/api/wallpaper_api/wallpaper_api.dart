@@ -9,7 +9,9 @@ class WallpaperApi {
   WallpaperApi() : _apiWrapper = ApiWrapper();
 
   Future<List<WallhavenWallpaper>> getWallpapers({int page = 1}) async {
-    final Uri uri = Uri.parse(Endpoints.baseURL);
+    final Uri uri = Uri.parse(Endpoints.baseURL).replace(queryParameters: <String, String>{
+      'page': page.toString(),
+    });
 
     final ApiResponse? response = await _apiWrapper.getApi(url: uri.toString());
 

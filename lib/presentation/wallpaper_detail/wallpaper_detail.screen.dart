@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
-import 'package:wallpaper_manager_plus/wallpaper_manager_plus.dart';
+import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
 class WallpaperDetailScreen extends StatelessWidget {
   const WallpaperDetailScreen({super.key, required this.wallpaper, required this.wallpapers});
@@ -89,10 +89,10 @@ class WallpaperDetailScreen extends StatelessWidget {
                         // download the image file from cache/network
                         final File file = await DefaultCacheManager().getSingleFile(imageUrl);
 
-                        final int location = WallpaperManagerPlus.homeScreen;
+                        final int location = WallpaperManagerFlutter.homeScreen;
 
                         // <-- FIXED: pass the File, not the path
-                        await WallpaperManagerPlus().setWallpaper(file, location);
+                        await WallpaperManagerFlutter().setWallpaper(file, location);
                       },
                       icon: const Icon(Icons.home),
                     ),

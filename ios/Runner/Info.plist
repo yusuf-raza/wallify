@@ -14,6 +14,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>wallify</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Gallery permission required to save wallpaper in gallery</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

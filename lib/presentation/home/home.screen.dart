@@ -134,15 +134,16 @@ class _WallpaperGrid extends StatelessWidget {
               mainAxisSpacing: 5, // Vertical spacing between items
               childAspectRatio: 0.6,
             ),
-            delegate: SliverChildBuilderDelegate(
-              (BuildContext context, int index) {
-                final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
-                // Each item in the grid.
-                return GridItem(
+            delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
+              final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
+              // Each item in the grid.
+              return Hero(
+                tag: wallpaper.path!,
+                child: GridItem(
                   wallpaper: wallpaper,
                   onTap: () {
                     // Navigate to the wallpaper detail screen on tap.
-                    context.go(
+                    context.push(
                       AppRouter.wallpaperDetailNew,
                       extra: <String, Object>{
                         'imgUrl': '${wallpaper.path}'!,
@@ -151,13 +152,13 @@ class _WallpaperGrid extends StatelessWidget {
                         'category': wallpaper.category!,
                         'size': wallpaper.fileSize!,
                         'colors': wallpaper.colors!,
+                        'purity': wallpaper.purity!,
                       },
                     );
                   },
-                );
-              },
-              childCount: homeViewModel.wallpapers.length,
-            ),
+                ),
+              );
+            }, childCount: homeViewModel.wallpapers.length),
           ),
         );
       },

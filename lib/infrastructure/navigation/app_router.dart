@@ -63,6 +63,8 @@ class AppRouter {
           final String category = data['category'] as String;
           final int dimensionX = data['dimensionX'] as int;
           final int dimensionY = data['dimensionY'] as int;
+          final String purity = data['purity'] as String;
+
           final List<dynamic> colors = data['colors'];
 
           final int size = data['size'] as int;
@@ -74,6 +76,7 @@ class AppRouter {
             size: size,
             dimensionY: dimensionY,
             colors: colors,
+            purity: purity,
           );
         },
       ),
