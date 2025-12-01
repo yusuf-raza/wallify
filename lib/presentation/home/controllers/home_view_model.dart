@@ -5,8 +5,11 @@ import 'package:wallify/infrastructure/utils/logger_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
   final WallpaperApi _wallpaperApi;
+  final LoggerService _loggerService;
 
-  HomeViewModel() : _wallpaperApi = WallpaperApi();
+  HomeViewModel({WallpaperApi? wallpaperApi, LoggerService? loggerService})
+      : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
+        _loggerService = loggerService ?? LoggerService.instance;
 
   int _currentPage = 1;
   bool gettingWallpapers = false;
@@ -22,11 +25,13 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       final List<WallhavenWallpaper> newWallpapers =
-          await _wallpaperApi.getWallpapers(page: _currentPage);
+          await _wallpaperApi.getWallpapers(
+        page: _currentPage,
+      );
       wallpapers.addAll(newWallpapers);
-      LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
+      _loggerService.logInfo('wallpapers length   ${wallpapers.length}');
     } catch (e) {
-      LoggerService.logError('error in getWallpapers() $e');
+      _loggerService.logError('error in getWallpapers() $e');
     } finally {
       gettingWallpapers = false;
       notifyListeners();
@@ -42,12 +47,14 @@ class HomeViewModel extends ChangeNotifier {
     try {
       _currentPage++;
       final List<WallhavenWallpaper> newWallpapers =
-          await _wallpaperApi.getWallpapers(page: _currentPage);
+          await _wallpaperApi.getWallpapers(
+        page: _currentPage,
+      );
       wallpapers.addAll(newWallpapers);
-      LoggerService.logInfo('wallpapers length   ${wallpapers.length}');
+      _loggerService.logInfo('wallpapers length   ${wallpapers.length}');
     } catch (e) {
       _currentPage--; // revert page number on error
-      LoggerService.logError('error in loadMoreWallpapers() $e');
+      _loggerService.logError('error in loadMoreWallpapers() $e');
     } finally {
       loadingMoreWallpapers = false;
       notifyListeners();

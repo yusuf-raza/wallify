@@ -8,12 +8,14 @@ import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
+import 'package:wallify/presentation/wallpaper_detail/slider_item.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
-import '../slider_item.dart';
-
 class WallpaperDetailViewModel extends ChangeNotifier {
-  WallpaperDetailViewModel() {
+  final LoggerService _loggerService;
+
+  WallpaperDetailViewModel({LoggerService? loggerService})
+    : _loggerService = loggerService ?? LoggerService.instance {
     imageSliders = List<Widget>.generate(imgList.length, (int index) {
       return SliderItem(index: index, imgList: imgList);
     });
@@ -88,7 +90,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         );
       }
     } catch (e) {
-      LoggerService.logError('failed to save $e');
+      _loggerService.logError('failed to save $e');
       Fluttertoast.showToast(
         msg: 'Failed to save wallpaper.',
         toastLength: Toast.LENGTH_SHORT,

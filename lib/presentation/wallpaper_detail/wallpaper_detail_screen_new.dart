@@ -18,6 +18,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
     required this.size,
     required this.colors,
     required this.purity,
+    this.loggerService, // Added loggerService parameter
   });
 
   final String imgUrl;
@@ -27,10 +28,13 @@ class WallpaperDetailScreenNew extends StatelessWidget {
   final List<dynamic> colors;
   final int size;
   final String purity;
+  final LoggerService? loggerService; // Added loggerService parameter
 
   @override
   Widget build(BuildContext context) {
-    LoggerService.logInfo('colors ${colors[1]}');
+    final LoggerService logger =
+        loggerService ?? LoggerService.instance; // Use injected logger or default
+    logger.logInfo('colors ${colors[1]}');
     final Color primaryColor = fromHex(colors[0]);
     final Color secondaryColor = fromHex(colors[1]);
 

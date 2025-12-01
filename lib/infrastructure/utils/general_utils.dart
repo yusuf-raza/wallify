@@ -6,18 +6,25 @@ import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
 class GeneralUtils {
-  static Future<bool> isInternetAvailable({bool showToast = true}) async {
+  final LoggerService _loggerService;
+
+  GeneralUtils({LoggerService? loggerService})
+      : _loggerService = loggerService ?? LoggerService.instance;
+
+  Future<bool> isInternetAvailable({bool showToast = true}) async {
     try {
       // Check network connectivity
-      final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
-      if (connectivityResult == ConnectivityResult.none) {
+      final List<ConnectivityResult> connectivityResult =
+          await Connectivity().checkConnectivity();
+      if (connectivityResult.contains(ConnectivityResult.none)) {
         if (showToast) {
-          GeneralUtils.showToast(
-            toastMsg: 'No internet connection. Please check your WiFi or mobile data.',
+          showToastMessage(
+            toastMsg:
+                'No internet connection. Please check your WiFi or mobile data.',
             isSuccess: false,
           );
         }
-        LoggerService.logError('No network connectivity');
+        _loggerService.logError('No network connectivity');
         return false;
       }
 
@@ -27,31 +34,31 @@ class GeneralUtils {
       ).timeout(const Duration(seconds: 3), onTimeout: () => <InternetAddress>[]);
 
       if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-        LoggerService.logInfo('DNS lookup successful for 1.1.1.1');
+        _loggerService.logInfo('DNS lookup successful for 1.1.1.1');
         return true;
       }
 
       if (showToast) {
-        GeneralUtils.showToast(
+        showToastMessage(
           toastMsg: 'Internet connection is not working. Please try again later.',
           isSuccess: false,
         );
       }
-      LoggerService.logError('DNS lookup failed');
+      _loggerService.logError('DNS lookup failed');
       return false;
     } catch (e) {
       if (showToast) {
-        GeneralUtils.showToast(
+        showToastMessage(
           toastMsg: 'Internet connection is not working. Please try again later.',
           isSuccess: false,
         );
       }
-      LoggerService.logError('isInternetAvailable error: $e');
+      _loggerService.logError('isInternetAvailable error: $e');
       return false;
     }
   }
 
-  static void showToast({
+  void showToastMessage({
     required String toastMsg,
     Toast toastLength = Toast.LENGTH_SHORT,
     required bool isSuccess,
