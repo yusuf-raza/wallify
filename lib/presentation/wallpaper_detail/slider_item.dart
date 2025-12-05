@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 
 class SliderItem extends StatelessWidget {
   const SliderItem({super.key, required this.index, required this.imgList});
@@ -18,7 +19,7 @@ class SliderItem extends StatelessWidget {
             CachedNetworkImage(
               imageUrl: imgList[index],
               progressIndicatorBuilder: (BuildContext context, String url, DownloadProgress downloadProgress) =>
-                  Center(child: CircularProgressIndicator(value: downloadProgress.progress)),
+                  Center(child: CustomCircularProgressIndicator(color: Colors.white)),
               errorWidget: (BuildContext context, String url, Object error) => const Icon(Icons.error),
             ),
             Image.network(

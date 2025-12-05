@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
+import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/common/grid_item.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
@@ -80,12 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Consumer<HomeViewModel>(
               builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
                 if (homeViewModel.loadingMoreWallpapers) {
-                  return SliverToBoxAdapter(
-                    child: Container(
-                      height: 80.0, // Give it some height
-                      alignment: Alignment.bottomCenter,
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: const CircularProgressIndicator.adaptive(),
+                  return const SliverToBoxAdapter(
+                    child: Center(
+                      child: CustomCircularProgressIndicator(),
                     ),
                   );
                 }
@@ -121,7 +119,7 @@ class _WallpaperGrid extends StatelessWidget {
         // Show a loading indicator while fetching initial wallpapers.
         if (homeViewModel.gettingWallpapers) {
           return const SliverFillRemaining(
-            child: Center(child: CircularProgressIndicator.adaptive()),
+            child: Center(child: CustomCircularProgressIndicator()),
           );
         }
         // Display the wallpapers in a grid.

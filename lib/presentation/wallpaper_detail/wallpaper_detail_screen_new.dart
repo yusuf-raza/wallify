@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
+import 'package:wallify/presentation/wallpaper_detail/full_screen_image.screen.dart';
 
 class WallpaperDetailScreenNew extends StatelessWidget {
   const WallpaperDetailScreenNew({
@@ -57,21 +59,33 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                 children: <Widget>[
                   ClipRRect(
                     borderRadius: .circular(20),
-                    child: Hero(
-                      tag: imgUrl,
-                      child: CachedNetworkImage(
-                        height: 300.h,
-                        width: 300.w,
-                        imageUrl: imgUrl,
-                        fit: BoxFit.cover,
-                        placeholder: (BuildContext context, String url) => Shimmer.fromColors(
-                          baseColor: secondaryColor,
-                          highlightColor: primaryColor,
-                          child: Container(
-                            height: 300.h,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: .circular(20),
+                    child: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder: (BuildContext context) => FullScreenImageScreen(
+                              imageUrl: imgUrl,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Hero(
+                        tag: imgUrl,
+                        child: CachedNetworkImage(
+                          height: 300.h,
+                          width: 300.w,
+                          imageUrl: imgUrl,
+                          fit: BoxFit.cover,
+                          placeholder: (BuildContext context, String url) => Shimmer.fromColors(
+                            baseColor: secondaryColor,
+                            highlightColor: primaryColor,
+                            child: Container(
+                              height: 300.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: .circular(20),
+                              ),
                             ),
                           ),
                         ),
@@ -154,14 +168,17 @@ class WallpaperDetailScreenNew extends StatelessWidget {
         onTap: onTap,
         borderRadius: .circular(30.r),
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
+          height: 50,
+          width: 120,
+          // padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
           decoration: BoxDecoration(
             borderRadius: .circular(30.r),
             border: Border.all(color: color, width: 2.w),
           ),
           child: isDownloading
-              ? const CircularProgressIndicator()
+              ? const Center(child: CustomCircularProgressIndicator(color: Colors.white))
               : Row(
+                  mainAxisAlignment: .center,
                   spacing: 3.w,
                   children: <Widget>[
                     Icon(icon, color: color),
