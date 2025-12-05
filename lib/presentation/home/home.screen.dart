@@ -143,15 +143,7 @@ class _WallpaperGrid extends StatelessWidget {
                     // Navigate to the wallpaper detail screen on tap.
                     context.push(
                       AppRouter.wallpaperDetailNew,
-                      extra: <String, Object>{
-                        'imgUrl': '${wallpaper.path}'!,
-                        'dimensionX': wallpaper.dimensionX!,
-                        'dimensionY': wallpaper.dimensionY!,
-                        'category': wallpaper.category!,
-                        'size': wallpaper.fileSize!,
-                        'colors': wallpaper.colors!,
-                        'purity': wallpaper.purity!,
-                      },
+                      extra: wallpaper,
                     );
                   },
                 ),

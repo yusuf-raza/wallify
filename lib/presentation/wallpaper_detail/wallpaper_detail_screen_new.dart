@@ -3,154 +3,158 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
+import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/full_screen_image.screen.dart';
 
 class WallpaperDetailScreenNew extends StatelessWidget {
-  const WallpaperDetailScreenNew({
-    super.key,
-    required this.imgUrl,
-    required this.category,
-    required this.dimensionX,
-    required this.dimensionY,
-    required this.size,
-    required this.colors,
-    required this.purity,
-    this.loggerService, // Added loggerService parameter
-  });
+  const WallpaperDetailScreenNew({super.key, required this.wallpaper, this.loggerService});
 
-  final String imgUrl;
-  final String category;
-  final int dimensionX;
-  final int dimensionY;
-  final List<dynamic> colors;
-  final int size;
-  final String purity;
-  final LoggerService? loggerService; // Added loggerService parameter
+  final WallhavenWallpaper wallpaper;
+  final LoggerService? loggerService;
 
   @override
   Widget build(BuildContext context) {
     final LoggerService logger =
         loggerService ?? LoggerService.instance; // Use injected logger or default
-    logger.logInfo('colors ${colors[1]}');
-    final Color primaryColor = fromHex(colors[0]);
-    final Color secondaryColor = fromHex(colors[1]);
+    logger.logInfo('colors ${wallpaper.colors![1]}');
+    final Color primaryColor = fromHex(wallpaper.colors![0]);
+    final Color secondaryColor = fromHex(wallpaper.colors![1]);
 
-    return ChangeNotifierProvider<WallpaperDetailViewModel>(
-      create: (_) => WallpaperDetailViewModel(),
-      child: Consumer<WallpaperDetailViewModel>(
-        builder: (BuildContext context, WallpaperDetailViewModel viewModel, _) {
-          return Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                onPressed: () => context.pop(),
-                icon: Icon(Icons.keyboard_backspace, color: primaryColor),
-              ),
-              backgroundColor: secondaryColor,
-            ),
-            backgroundColor: secondaryColor,
-            body: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 30.w),
-              child: Column(
-                children: <Widget>[
-                  ClipRRect(
-                    borderRadius: .circular(20),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => FullScreenImageScreen(
-                              imageUrl: imgUrl,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Hero(
-                        tag: imgUrl,
-                        child: CachedNetworkImage(
-                          height: 300.h,
-                          width: 300.w,
-                          imageUrl: imgUrl,
-                          fit: BoxFit.cover,
-                          placeholder: (BuildContext context, String url) => Shimmer.fromColors(
-                            baseColor: secondaryColor,
-                            highlightColor: primaryColor,
-                            child: Container(
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
+      ],
+      child: Consumer2<WallpaperDetailViewModel, FavouriteViewModel>(
+        builder:
+            (
+              BuildContext context,
+              WallpaperDetailViewModel viewModel,
+              FavouriteViewModel favouriteViewModel,
+              _,
+            ) {
+              return Scaffold(
+                appBar: AppBar(
+                  leading: IconButton(
+                    onPressed: () => context.pop(),
+                    icon: Icon(Icons.keyboard_backspace, color: primaryColor),
+                  ),
+                  backgroundColor: secondaryColor,
+                ),
+                backgroundColor: secondaryColor,
+                body: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 30.w),
+                  child: Column(
+                    children: <Widget>[
+                      ClipRRect(
+                        borderRadius: .circular(20),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    FullScreenImageScreen(imageUrl: wallpaper.path!),
+                              ),
+                            );
+                          },
+                          child: Hero(
+                            tag: wallpaper.path!,
+                            child: CachedNetworkImage(
                               height: 300.h,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: .circular(20),
+                              width: 300.w,
+                              imageUrl: wallpaper.path!,
+                              fit: BoxFit.cover,
+                              placeholder: (BuildContext context, String url) => Shimmer.fromColors(
+                                baseColor: secondaryColor,
+                                highlightColor: primaryColor,
+                                child: Container(
+                                  height: 300.h,
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: .circular(20),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  Column(
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: .spaceBetween,
+                      Column(
                         children: <Widget>[
-                          const Spacer(),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.favorite_border, color: primaryColor),
+                          Row(
+                            mainAxisAlignment: .spaceBetween,
+                            children: <Widget>[
+                              const Spacer(),
+                              IconButton(
+                                onPressed: () {
+                                  favouriteViewModel.addOrRemoveFavourite(wallpaper);
+                                },
+                                icon: Icon(
+                                  favouriteViewModel.isFavourite(wallpaper)
+                                      ? Icons.favorite
+                                      : Icons.favorite_border,
+                                  color: primaryColor,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: .spaceBetween,
+                            children: <Widget>[
+                              _buildButton(
+                                icon: Icons.save_alt,
+                                label: 'Save',
+                                color: primaryColor,
+                                onTap: () => viewModel.saveWallpaper(wallpaper.path!),
+                                isDownloading: viewModel.isDownloading,
+                              ),
+                              _buildButton(
+                                icon: Icons.image_outlined,
+                                label: 'Set',
+                                color: primaryColor,
+                                onTap: () => viewModel.downloadAndSetWallpaper(wallpaper.path!),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                      Row(
-                        mainAxisAlignment: .spaceBetween,
+                      SizedBox(height: 10.h),
+                      Column(
+                        spacing: 3.h,
                         children: <Widget>[
-                          _buildButton(
-                            icon: Icons.save_alt,
-                            label: 'Save',
+                          _buildInfoRow(
+                            icon: Icons.category,
+                            text: wallpaper.category!,
                             color: primaryColor,
-                            onTap: () => viewModel.saveWallpaper(imgUrl),
-                            isDownloading: viewModel.isDownloading,
                           ),
-                          _buildButton(
-                            icon: Icons.image_outlined,
-                            label: 'Set',
+                          _buildInfoRow(
+                            icon: Icons.photo_size_select_actual_outlined,
+                            text: '${wallpaper.dimensionX} x ${wallpaper.dimensionY}',
                             color: primaryColor,
-                            onTap: () => viewModel.downloadAndSetWallpaper(imgUrl),
+                          ),
+                          _buildInfoRow(
+                            icon: Icons.folder,
+                            text: '${(wallpaper.fileSize! / (1024 * 1024)).toStringAsFixed(2)} MB',
+                            color: primaryColor,
+                          ),
+                          _buildInfoRow(
+                            icon: Icons.privacy_tip_outlined,
+                            text: wallpaper.purity!,
+                            color: primaryColor,
                           ),
                         ],
                       ),
                     ],
                   ),
-                  SizedBox(height: 10.h),
-                  Column(
-                    spacing: 3.h,
-                    children: <Widget>[
-                      _buildInfoRow(icon: Icons.category, text: category, color: primaryColor),
-                      _buildInfoRow(
-                        icon: Icons.photo_size_select_actual_outlined,
-                        text: '$dimensionX x $dimensionY',
-                        color: primaryColor,
-                      ),
-                      _buildInfoRow(
-                        icon: Icons.folder,
-                        text: '${(size / (1024 * 1024)).toStringAsFixed(2)} MB',
-                        color: primaryColor,
-                      ),
-                      _buildInfoRow(
-                        icon: Icons.privacy_tip_outlined,
-                        text: purity,
-                        color: primaryColor,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          );
-        },
+                ),
+              );
+            },
       ),
     );
   }
