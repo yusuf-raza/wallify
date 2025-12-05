@@ -11,6 +11,7 @@ import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/full_screen_image.screen.dart';
+import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
 class WallpaperDetailScreenNew extends StatelessWidget {
   const WallpaperDetailScreenNew({super.key, required this.wallpaper, this.loggerService});
@@ -118,7 +119,12 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                                 icon: Icons.image_outlined,
                                 label: 'Set',
                                 color: primaryColor,
-                                onTap: () => viewModel.downloadAndSetWallpaper(wallpaper.path!),
+                                isDownloading: viewModel.isSettingWallpaper,
+                                onTap: () => _showSetWallpaperBottomSheet(
+                                  context,
+                                  viewModel,
+                                  wallpaper.path!,
+                                ),
                               ),
                             ],
                           ),
@@ -156,6 +162,50 @@ class WallpaperDetailScreenNew extends StatelessWidget {
               );
             },
       ),
+    );
+  }
+
+  void _showSetWallpaperBottomSheet(
+    BuildContext context,
+    WallpaperDetailViewModel viewModel,
+    String imageUrl,
+  ) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              ListTile(
+                leading: const Icon(Icons.home),
+                title: const Text('Set as Home Screen'),
+                onTap: () {
+                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.homeScreen);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.lock),
+                title: const Text('Set as Lock Screen'),
+                onTap: () {
+                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.lockScreen);
+                  Navigator.pop(context);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.phone_android),
+                title: const Text('Set as Both'),
+                onTap: () {
+                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.bothScreens);
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 

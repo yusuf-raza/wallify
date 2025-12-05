@@ -27,13 +27,17 @@ class WallpaperDetailViewModel extends ChangeNotifier {
     'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=94a1e718d89ca60a6337a6008341ca50&auto=format&fit=crop&w=1950&q=80',
     'https://images.unsplash.com/photo-1523205771623-e0faa4d2813d?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=89719a0d55dd05e2deae4120227e6efc&auto=format&fit=crop&w=1953&q=80',
     'https://images.unsplash.com/photo-1508704019882-f9cf40e475b4?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=8c6e5e3aba713b17aa1fe71ab4f0ae5b&auto=format&fit=crop&w=1352&q=80',
-    'https.unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
+    'https://unsplash.com/photo-1519985176271-adb1088fa94c?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a0c8d632e977f94e5d312d9893258f59&auto=format&fit=crop&w=1355&q=80',
   ];
 
   late final List<Widget> imageSliders;
   bool isDownloading = false;
+  bool isSettingWallpaper = false;
 
-  Future<void> downloadAndSetWallpaper(String imageUrl) async {
+  Future<void> setWallpaper(String imageUrl, int location) async {
+    isSettingWallpaper = true;
+    notifyListeners();
+
     try {
       final http.Response response = await http.get(Uri.parse(imageUrl));
       final Directory tempDir = await getTemporaryDirectory();
@@ -42,7 +46,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
       ).writeAsBytes(response.bodyBytes);
 
       final WallpaperManagerFlutter wallpaperManager = WallpaperManagerFlutter();
-      await wallpaperManager.setWallpaper(file.path, WallpaperManagerFlutter.homeScreen);
+      await wallpaperManager.setWallpaper(file, location);
 
       Fluttertoast.showToast(
         msg: 'Wallpaper set successfully!',
@@ -52,6 +56,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         textColor: Colors.white,
       );
     } catch (e) {
+      _loggerService.logError('Failed to set wallpaper: $e');
       Fluttertoast.showToast(
         msg: 'Failed to set wallpaper.',
         toastLength: Toast.LENGTH_SHORT,
@@ -59,6 +64,9 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         backgroundColor: Colors.red,
         textColor: Colors.white,
       );
+    } finally {
+      isSettingWallpaper = false;
+      notifyListeners();
     }
   }
 
