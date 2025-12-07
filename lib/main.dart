@@ -39,6 +39,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeViewModel>(
       builder: (BuildContext context, ThemeViewModel themeController, Widget? child) {
         return MaterialApp.router(
+          debugShowCheckedModeBanner: false,
           routerConfig: AppRouter.router,
           themeMode: themeController.themeMode,
           theme: ThemeData.light(),

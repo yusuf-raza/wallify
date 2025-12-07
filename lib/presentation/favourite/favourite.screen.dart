@@ -49,7 +49,7 @@ class FavouriteScreen extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       height: 50.h,
                       decoration: const BoxDecoration(
-                       // color: AppColors.blackWithOpacity,
+                        // color: AppColors.blackWithOpacity,
                         borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(20),
                           bottomRight: Radius.circular(20),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
@@ -61,46 +62,63 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: RefreshIndicator(
-          // Allows pull-to-refresh to fetch new wallpapers.
-          onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).getWallpapers(),
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: <Widget>[
-              SliverAppBar(
-                title: Text(
-                  AppStrings.appTitle,
-                  style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-                ),
-                actions: <Widget>[
-                  // Theme toggle button.
-                  Consumer<ThemeViewModel>(
-                    builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
-                        IconButton(
-                          icon: const Icon(Icons.dark_mode, size: 25),
-                          onPressed: theme.toggleTheme,
-                        ),
+        child: Stack(
+          children: <Widget>[
+            RefreshIndicator(
+              // Allows pull-to-refresh to fetch new wallpapers.
+              onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).getWallpapers(),
+              child: CustomScrollView(
+                controller: _scrollController,
+                slivers: <Widget>[
+                  SliverAppBar(
+                    title: Text(
+                      AppStrings.appTitle,
+                      style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
+                    ),
+                    actions: <Widget>[
+                      // Theme toggle button.
+                      Consumer<ThemeViewModel>(
+                        builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
+                            IconButton(
+                              icon: const Icon(Icons.dark_mode, size: 25),
+                              onPressed: theme.toggleTheme,
+                            ),
+                      ),
+                    ],
+                    centerTitle: true,
+                    pinned: false,
+                    floating: true,
                   ),
+                  // The grid of wallpapers.
+                  const _WallpaperGrid(),
+                  // Removed the Consumer for loading more wallpapers from here
                 ],
-                centerTitle: true,
-                pinned: false,
-                floating: false,
               ),
-              // The grid of wallpapers.
-              const _WallpaperGrid(),
-              // Shows a loading indicator at the bottom when loading more wallpapers.
-              Consumer<HomeViewModel>(
-                builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
-                  if (homeViewModel.loadingMoreWallpapers) {
-                    return const SliverToBoxAdapter(
-                      child: Center(child: CustomProgressIndicator.CustomProgressIndicator()),
-                    );
-                  }
-                  return const SliverToBoxAdapter(child: SizedBox.shrink());
-                },
-              ),
-            ],
-          ),
+            ),
+            // Positioned loading indicator at the bottom
+            Consumer<HomeViewModel>(
+              builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
+                if (homeViewModel.loadingMoreWallpapers) {
+                  return Positioned(
+                    bottom: 0, // Position it at the bottom
+                    left: 0,
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.only(
+                        bottom: 20.h,
+                      ), // Add some padding from the bottom nav bar
+                      color: Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor.withOpacity(0.8), // Semi-transparent background
+                      alignment: Alignment.center,
+                      child: CustomProgressIndicator.CustomProgressIndicator(),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -135,13 +153,12 @@ class _WallpaperGrid extends StatelessWidget {
         // Display the wallpapers in a grid.
         return SliverPadding(
           padding: EdgeInsets.symmetric(horizontal: 2.w),
-          sliver: SliverGrid(
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          sliver: SliverMasonryGrid(
+            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 5, // Horizontal spacing between items
-              mainAxisSpacing: 5, // Vertical spacing between items
-              childAspectRatio: 0.6,
             ),
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 5,
             delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
               final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
               // Each item in the grid.

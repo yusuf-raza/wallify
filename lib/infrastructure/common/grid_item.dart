@@ -11,28 +11,30 @@ class GridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate the aspect ratio from the wallpaper's dimensions.
+    // This helps the grid item maintain its shape even before the image loads.
+    final double aspectRatio = (wallpaper.dimensionX ?? 1) / (wallpaper.dimensionY ?? 1);
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
         clipBehavior: Clip.antiAlias,
-        child: CachedNetworkImage(
-          imageUrl: wallpaper.thumbs?.large ?? '',
-          fit: BoxFit.cover,
-          progressIndicatorBuilder:
-              (BuildContext context, String url, DownloadProgress downloadProgress) {
-                return Center(
-                  child: CustomProgressIndicator.CustomProgressIndicator(
-                    color: Color(int.parse('0xFF${wallpaper.colors![0].replaceFirst('#', '')}')),
-                  ),
-
-                  // LinearProgressIndicator(
-                  //   value: downloadProgress.progress,
-                  //   color: Color(int.parse('0xFF${wallpaper.colors![0].replaceFirst('#', '')}')),
-                  // ),
-                );
-              },
-          errorWidget: (BuildContext context, String url, Object error) =>
-              const Center(child: Icon(Icons.error)),
+        child: AspectRatio(
+          aspectRatio: aspectRatio,
+          child: CachedNetworkImage(
+            imageUrl: wallpaper.thumbs?.large ?? '',
+            fit: BoxFit.cover,
+            progressIndicatorBuilder:
+                (BuildContext context, String url, DownloadProgress downloadProgress) {
+                  return Center(
+                    child: CustomProgressIndicator.CustomProgressIndicator(
+                      color: Color(int.parse('0xFF${wallpaper.colors![0].replaceFirst('#', '')}')),
+                    ),
+                  );
+                },
+            errorWidget: (BuildContext context, String url, Object error) =>
+                const Center(child: Icon(Icons.error)),
+          ),
         ),
       ),
     );
