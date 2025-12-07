@@ -16,9 +16,9 @@ class ApiWrapper {
     http.Client? client,
     ConnectivityChecker? connectivityChecker,
     LoggerService? loggerService,
-  })  : _client = client ?? http.Client(),
-        _connectivityChecker = connectivityChecker ?? ConnectivityCheckerImpl(),
-        _loggerService = loggerService ?? LoggerService.instance;
+  }) : _client = client ?? http.Client(),
+       _connectivityChecker = connectivityChecker ?? ConnectivityCheckerImpl(),
+       _loggerService = loggerService ?? LoggerService.instance;
 
   static const Duration _requestTimeout = Duration(seconds: 30);
   static const Map<String, String> _jsonHeaders = <String, String>{
@@ -46,20 +46,17 @@ class ApiWrapper {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         try {
-          final Map<String, dynamic> data =
-              _decoder.convert(response.body) as Map<String, dynamic>;
+          final Map<String, dynamic> data = _decoder.convert(response.body) as Map<String, dynamic>;
           return ApiResponse.fromJson(data);
         } catch (e) {
           _loggerService.logError('getApi Failed to parse response: $e');
-          return ApiResponse(
-              success: false, message: 'Failed to parse API response.');
+          return ApiResponse(success: false, message: 'Failed to parse API response.');
         }
       } else if (response.statusCode == 404) {
         _loggerService.logError('getApi Resource not found: $urlString');
         return ApiResponse(success: false, message: 'Resource not found.');
       } else {
-        _loggerService.logError(
-            'getApi API error: $urlString, status=${response.statusCode}');
+        _loggerService.logError('getApi API error: $urlString, status=${response.statusCode}');
         return ApiResponse(
           success: false,
           message: 'API error with status code ${response.statusCode}.',
@@ -71,8 +68,7 @@ class ApiWrapper {
     }
   }
 
-  Future<ApiResponse> postApi(
-      {required String url, required Map<String, dynamic> param}) async {
+  Future<ApiResponse> postApi({required String url, required Map<String, dynamic> param}) async {
     final String urlString = url;
     final Uri? uri = Uri.tryParse(urlString);
     if (uri == null) {
@@ -100,8 +96,7 @@ class ApiWrapper {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         try {
-          final Map<String, dynamic> data =
-              jsonDecode(response.body) as Map<String, dynamic>;
+          final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
           _loggerService.logInfo('Response for $url\nMethod POST \n$data');
           return ApiResponse.fromJson(data);
         } catch (e) {
@@ -112,8 +107,7 @@ class ApiWrapper {
         _loggerService.logError('postApi Resource not found: $urlString');
         return ApiResponse(success: false);
       } else {
-        _loggerService.logError(
-            'postApi API error: $urlString, status=${response.statusCode}');
+        _loggerService.logError('postApi API error: $urlString, status=${response.statusCode}');
         return ApiResponse(success: false);
       }
     } catch (e) {
@@ -142,8 +136,7 @@ class ApiWrapper {
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         try {
-          final Map<String, dynamic> data =
-              jsonDecode(response.body) as Map<String, dynamic>;
+          final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
           _loggerService.logInfo('Response for $url\nMethod DELETE\n$data');
           return ApiResponse.fromJson(data);
         } catch (e) {
@@ -154,8 +147,7 @@ class ApiWrapper {
         _loggerService.logError('Resource not found: $urlString');
         return ApiResponse(success: false);
       } else {
-        _loggerService.logError(
-            'deleteApi API error: $urlString, status=${response.statusCode}');
+        _loggerService.logError('deleteApi API error: $urlString, status=${response.statusCode}');
         return ApiResponse(success: false);
       }
     } catch (e) {
@@ -193,8 +185,7 @@ class ApiWrapper {
             _loggerService.logError('multipartPost File not found: ${file.path}');
             return ApiResponse(success: false);
           }
-          request.files
-              .add(await http.MultipartFile.fromPath(entry.key, file.path));
+          request.files.add(await http.MultipartFile.fromPath(entry.key, file.path));
         }
       } catch (e) {
         _loggerService.logError('multipartPost Failed to process files: $e');
@@ -203,17 +194,13 @@ class ApiWrapper {
     }
 
     try {
-      final http.StreamedResponse streamedResponse =
-          await request.send().timeout(_requestTimeout);
-      final http.Response response =
-          await http.Response.fromStream(streamedResponse);
+      final http.StreamedResponse streamedResponse = await request.send().timeout(_requestTimeout);
+      final http.Response response = await http.Response.fromStream(streamedResponse);
 
       if (response.statusCode >= 200 && response.statusCode < 300) {
         try {
-          final Map<String, dynamic> data =
-              jsonDecode(response.body) as Map<String, dynamic>;
-          _loggerService
-              .logInfo('Response for $url\nMethod POST - MULTIPART\n$data');
+          final Map<String, dynamic> data = jsonDecode(response.body) as Map<String, dynamic>;
+          _loggerService.logInfo('Response for $url\nMethod POST - MULTIPART\n$data');
           return ApiResponse.fromJson(data);
         } catch (e) {
           _loggerService.logError('multipartPost Failed to parse response: $e');

@@ -15,13 +15,15 @@ void main() {
   runApp(
     MultiProvider(
       providers: <SingleChildWidget>[
-        ChangeNotifierProvider(create: (_) => BaseViewModel()),
-        ChangeNotifierProvider(create: (_) => FavouriteViewModel()),
-        ChangeNotifierProvider(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider(create: (_) => SplashViewModel()),
-        ChangeNotifierProvider(create: (_) => WallpaperCategoryViewModel()),
-        ChangeNotifierProvider(create: (_) => WallpaperDetailViewModel()),
-        ChangeNotifierProvider(create: (_) => ThemeViewModel()),
+        ChangeNotifierProvider<BaseViewModel>(create: (_) => BaseViewModel()),
+        ChangeNotifierProvider<FavouriteViewModel>(create: (_) => FavouriteViewModel()),
+        ChangeNotifierProvider<HomeViewModel>(create: (_) => HomeViewModel()),
+        ChangeNotifierProvider<SplashViewModel>(create: (_) => SplashViewModel()),
+        ChangeNotifierProvider<WallpaperCategoryViewModel>(
+          create: (_) => WallpaperCategoryViewModel(),
+        ),
+        ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
+        ChangeNotifierProvider<ThemeViewModel>(create: (_) => ThemeViewModel()),
       ],
       child: const MyApp(),
     ),
@@ -41,7 +43,7 @@ class MyApp extends StatelessWidget {
           themeMode: themeController.themeMode,
           theme: ThemeData.light(),
           darkTheme: ThemeData.dark(),
-          builder: (context, child) {
+          builder: (BuildContext context, Widget? child) {
             Responsive.init(context);
             return child!;
           },

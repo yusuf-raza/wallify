@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 
 class BaseScreen extends StatelessWidget {
@@ -19,18 +21,18 @@ class BaseScreen extends StatelessWidget {
             items: <SalomonBottomBarItem>[
               SalomonBottomBarItem(
                 icon: const Icon(Icons.home),
-                title: const Text('Home'),
-                selectedColor: Colors.purple,
+                title: Text(AppStrings.home),
+                selectedColor: AppColors.purple,
               ),
               SalomonBottomBarItem(
                 icon: const Icon(Icons.category),
-                title: const Text('category'),
-                selectedColor: Colors.pink,
+                title: Text(AppStrings.category),
+                selectedColor: AppColors.pink,
               ),
               SalomonBottomBarItem(
                 icon: const Icon(Icons.favorite),
-                title: const Text('Favourite'),
-                selectedColor: Colors.orange,
+                title: Text(AppStrings.favourite),
+                selectedColor: AppColors.orange,
               ),
             ],
           ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/presentation/favourite/favourite.screen.dart';
@@ -6,6 +8,7 @@ import 'package:wallify/presentation/wallpaper_category/wallpaper_category.scree
 
 class BaseViewModel extends ChangeNotifier {
   final WallpaperApi _wallpaperApi;
+  final StreamController<int> _doubleTapController = StreamController<int>.broadcast();
 
   BaseViewModel() : _wallpaperApi = WallpaperApi() {
     getWallpapers();
@@ -14,6 +17,8 @@ class BaseViewModel extends ChangeNotifier {
   int _currentIndex = 0;
   int get currentIndex => _currentIndex;
 
+  Stream<int> get doubleTapStream => _doubleTapController.stream;
+
   List<Widget> screens = <Widget>[
     const HomeScreen(),
     const WallpaperCategoryScreen(),
@@ -21,6 +26,9 @@ class BaseViewModel extends ChangeNotifier {
   ];
 
   void changeIndex(int index) {
+    if (_currentIndex == index) {
+      _doubleTapController.add(index);
+    }
     _currentIndex = index;
     notifyListeners();
   }
@@ -31,5 +39,11 @@ class BaseViewModel extends ChangeNotifier {
     } catch (e) {
       // Handle error
     }
+  }
+
+  @override
+  void dispose() {
+    _doubleTapController.close();
+    super.dispose();
   }
 }

@@ -8,6 +8,7 @@ import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
+import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
 /// The main screen of the application, displaying a list of wallpapers.
@@ -21,10 +22,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Controller for the scroll view to detect when the user reaches the bottom.
   final ScrollController _scrollController = ScrollController();
+  late final BaseViewModel _baseViewModel;
 
   @override
   void initState() {
     super.initState();
+    _baseViewModel = Provider.of<BaseViewModel>(context, listen: false);
     // Fetch initial wallpapers after the first frame is rendered.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Provider.of<HomeViewModel>(context, listen: false).getWallpapers();
@@ -33,6 +36,16 @@ class _HomeScreenState extends State<HomeScreen> {
     _scrollController.addListener(() {
       if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
         Provider.of<HomeViewModel>(context, listen: false).loadMoreWallpapers();
+      }
+    });
+
+    _baseViewModel.doubleTapStream.listen((int index) {
+      if (index == 0) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
       }
     });
   }
@@ -46,51 +59,48 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final ThemeViewModel themeController = Provider.of<ThemeViewModel>(context, listen: false);
-
     return Scaffold(
-      // appBar: const CustomAppBar(),
-      body: RefreshIndicator(
-        // Allows pull-to-refresh to fetch new wallpapers.
-        onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).getWallpapers(),
-        child: CustomScrollView(
-          controller: _scrollController,
-          slivers: <Widget>[
-            SliverAppBar(
-              title: Text(
-                AppStrings.appTitle,
-                style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-              ),
-              actions: <Widget>[
-                // Theme toggle button.
-                Consumer<ThemeViewModel>(
-                  builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
-                      IconButton(
-                        icon: const Icon(Icons.dark_mode, size: 25),
-                        onPressed: theme.toggleTheme,
-                      ),
+      body: SafeArea(
+        child: RefreshIndicator(
+          // Allows pull-to-refresh to fetch new wallpapers.
+          onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).getWallpapers(),
+          child: CustomScrollView(
+            controller: _scrollController,
+            slivers: <Widget>[
+              SliverAppBar(
+                title: Text(
+                  AppStrings.appTitle,
+                  style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
                 ),
-              ],
-              centerTitle: true,
-              pinned: false,
-              floating: false,
-            ),
-            // The grid of wallpapers.
-            const _WallpaperGrid(),
-            // Shows a loading indicator at the bottom when loading more wallpapers.
-            Consumer<HomeViewModel>(
-              builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
-                if (homeViewModel.loadingMoreWallpapers) {
-                  return const SliverToBoxAdapter(
-                    child: Center(
-                      child: CustomCircularProgressIndicator(),
-                    ),
-                  );
-                }
-                return const SliverToBoxAdapter(child: SizedBox.shrink());
-              },
-            ),
-          ],
+                actions: <Widget>[
+                  // Theme toggle button.
+                  Consumer<ThemeViewModel>(
+                    builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
+                        IconButton(
+                          icon: const Icon(Icons.dark_mode, size: 25),
+                          onPressed: theme.toggleTheme,
+                        ),
+                  ),
+                ],
+                centerTitle: true,
+                pinned: false,
+                floating: false,
+              ),
+              // The grid of wallpapers.
+              const _WallpaperGrid(),
+              // Shows a loading indicator at the bottom when loading more wallpapers.
+              Consumer<HomeViewModel>(
+                builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
+                  if (homeViewModel.loadingMoreWallpapers) {
+                    return const SliverToBoxAdapter(
+                      child: Center(child: CustomProgressIndicator.CustomProgressIndicator()),
+                    );
+                  }
+                  return const SliverToBoxAdapter(child: SizedBox.shrink());
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -119,7 +129,7 @@ class _WallpaperGrid extends StatelessWidget {
         // Show a loading indicator while fetching initial wallpapers.
         if (homeViewModel.gettingWallpapers) {
           return const SliverFillRemaining(
-            child: Center(child: CustomCircularProgressIndicator()),
+            child: Center(child: CustomProgressIndicator.CustomProgressIndicator()),
           );
         }
         // Display the wallpapers in a grid.
@@ -141,10 +151,7 @@ class _WallpaperGrid extends StatelessWidget {
                   wallpaper: wallpaper,
                   onTap: () {
                     // Navigate to the wallpaper detail screen on tap.
-                    context.push(
-                      AppRouter.wallpaperDetailNew,
-                      extra: wallpaper,
-                    );
+                    context.push(AppRouter.wallpaperDetailNew, extra: wallpaper);
                   },
                 ),
               );

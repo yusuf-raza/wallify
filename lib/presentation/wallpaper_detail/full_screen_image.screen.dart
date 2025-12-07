@@ -25,7 +25,7 @@ class FullScreenImageScreen extends StatelessWidget {
                 imageUrl: imageUrl,
                 fit: BoxFit.contain,
                 placeholder: (BuildContext context, String url) =>
-                    const Center(child: CustomCircularProgressIndicator()),
+                    const Center(child: CustomProgressIndicator.CustomProgressIndicator()),
                 errorWidget: (BuildContext context, String url, Object error) =>
                     const Icon(Icons.error),
               ),

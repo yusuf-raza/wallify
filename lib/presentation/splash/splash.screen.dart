@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
-import 'package:wallify/presentation/splash/controllers/splash_view_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -22,10 +21,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final SplashViewModel splashViewModel = Provider.of<SplashViewModel>(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('SplashScreen'), centerTitle: true),
-      body: const Center(child: Text('SplashScreen is working', style: TextStyle(fontSize: 20))),
+      appBar: AppBar(title: Text(AppStrings.splashScreen), centerTitle: true),
+      body: Center(
+        child: Text(AppStrings.splashScreenWorking, style: const TextStyle(fontSize: 20)),
+      ),
     );
   }
 }

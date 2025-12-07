@@ -1,3 +1,4 @@
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -5,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
+import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
@@ -21,9 +23,6 @@ class WallpaperDetailScreenNew extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final LoggerService logger =
-        loggerService ?? LoggerService.instance; // Use injected logger or default
-    logger.logInfo('colors ${wallpaper.colors![1]}');
     final Color primaryColor = fromHex(wallpaper.colors![0]);
     final Color secondaryColor = fromHex(wallpaper.colors![1]);
 
@@ -77,7 +76,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                                 child: Container(
                                   height: 300.h,
                                   decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppColors.white,
                                     borderRadius: .circular(20),
                                   ),
                                 ),
@@ -110,14 +109,14 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                             children: <Widget>[
                               _buildButton(
                                 icon: Icons.save_alt,
-                                label: 'Save',
+                                label: AppStrings.save,
                                 color: primaryColor,
                                 onTap: () => viewModel.saveWallpaper(wallpaper.path!),
                                 isDownloading: viewModel.isDownloading,
                               ),
                               _buildButton(
                                 icon: Icons.image_outlined,
-                                label: 'Set',
+                                label: AppStrings.set,
                                 color: primaryColor,
                                 isDownloading: viewModel.isSettingWallpaper,
                                 onTap: () => _showSetWallpaperBottomSheet(
@@ -180,7 +179,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.home),
-                title: const Text('Set as Home Screen'),
+                title: Text(AppStrings.setAsHomeScreen),
                 onTap: () {
                   viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.homeScreen);
                   Navigator.pop(context);
@@ -188,7 +187,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.lock),
-                title: const Text('Set as Lock Screen'),
+                title: Text(AppStrings.setAsLockScreen),
                 onTap: () {
                   viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.lockScreen);
                   Navigator.pop(context);
@@ -196,7 +195,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
               ),
               ListTile(
                 leading: const Icon(Icons.phone_android),
-                title: const Text('Set as Both'),
+                title: Text(AppStrings.setAsBoth),
                 onTap: () {
                   viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.bothScreens);
                   Navigator.pop(context);
@@ -217,7 +216,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
     bool isDownloading = false,
   }) {
     return Material(
-      color: Colors.transparent,
+      color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
         borderRadius: .circular(30.r),
@@ -230,7 +229,9 @@ class WallpaperDetailScreenNew extends StatelessWidget {
             border: Border.all(color: color, width: 2.w),
           ),
           child: isDownloading
-              ? const Center(child: CustomCircularProgressIndicator(color: Colors.white))
+              ? const Center(
+                  child: CustomProgressIndicator.CustomProgressIndicator(color: AppColors.white),
+                )
               : Row(
                   mainAxisAlignment: .center,
                   spacing: 3.w,

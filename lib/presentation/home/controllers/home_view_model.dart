@@ -8,8 +8,8 @@ class HomeViewModel extends ChangeNotifier {
   final LoggerService _loggerService;
 
   HomeViewModel({WallpaperApi? wallpaperApi, LoggerService? loggerService})
-      : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
-        _loggerService = loggerService ?? LoggerService.instance;
+    : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
+      _loggerService = loggerService ?? LoggerService.instance;
 
   int _currentPage = 1;
   bool gettingWallpapers = false;
@@ -24,8 +24,7 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final List<WallhavenWallpaper> newWallpapers =
-          await _wallpaperApi.getWallpapers(
+      final List<WallhavenWallpaper> newWallpapers = await _wallpaperApi.getWallpapers(
         page: _currentPage,
       );
       wallpapers.addAll(newWallpapers);
@@ -46,8 +45,7 @@ class HomeViewModel extends ChangeNotifier {
 
     try {
       _currentPage++;
-      final List<WallhavenWallpaper> newWallpapers =
-          await _wallpaperApi.getWallpapers(
+      final List<WallhavenWallpaper> newWallpapers = await _wallpaperApi.getWallpapers(
         page: _currentPage,
       );
       wallpapers.addAll(newWallpapers);

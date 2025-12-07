@@ -9,18 +9,16 @@ class GeneralUtils {
   final LoggerService _loggerService;
 
   GeneralUtils({LoggerService? loggerService})
-      : _loggerService = loggerService ?? LoggerService.instance;
+    : _loggerService = loggerService ?? LoggerService.instance;
 
   Future<bool> isInternetAvailable({bool showToast = true}) async {
     try {
       // Check network connectivity
-      final List<ConnectivityResult> connectivityResult =
-          await Connectivity().checkConnectivity();
+      final List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult.contains(ConnectivityResult.none)) {
         if (showToast) {
           showToastMessage(
-            toastMsg:
-                'No internet connection. Please check your WiFi or mobile data.',
+            toastMsg: 'No internet connection. Please check your WiFi or mobile data.',
             isSuccess: false,
           );
         }

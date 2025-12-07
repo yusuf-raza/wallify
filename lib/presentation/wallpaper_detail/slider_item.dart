@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
+import 'package:wallify/infrastructure/theme/app_colors.dart';
 
 class SliderItem extends StatelessWidget {
   const SliderItem({super.key, required this.index, required this.imgList});
@@ -18,39 +19,34 @@ class SliderItem extends StatelessWidget {
           children: <Widget>[
             CachedNetworkImage(
               imageUrl: imgList[index],
-              progressIndicatorBuilder: (BuildContext context, String url, DownloadProgress downloadProgress) =>
-                  Center(child: CustomCircularProgressIndicator(color: Colors.white)),
-              errorWidget: (BuildContext context, String url, Object error) => const Icon(Icons.error),
+              progressIndicatorBuilder:
+                  (BuildContext context, String url, DownloadProgress downloadProgress) =>
+                      const Center(
+                        child: CustomProgressIndicator.CustomProgressIndicator(
+                          color: AppColors.white,
+                        ),
+                      ),
+              errorWidget: (BuildContext context, String url, Object error) =>
+                  const Icon(Icons.error),
             ),
-            Image.network(
-              imgList[index],
-              fit: BoxFit.cover,
-              width: 1000.0,
-              height: 600.0,
-            ),
+            Image.network(imgList[index], fit: BoxFit.cover, width: 1000.0, height: 600.0),
             Positioned(
               bottom: 0.0,
               left: 0.0,
               right: 0.0,
               child: Container(
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: <Color>[
-                      Color.fromARGB(200, 0, 0, 0),
-                      Color.fromARGB(0, 0, 0, 0),
-                    ],
+                    colors: <Color>[AppColors.black.withOpacity(0.8), AppColors.transparent],
                     begin: Alignment.bottomCenter,
                     end: Alignment.topCenter,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10.0,
-                  horizontal: 20.0,
-                ),
+                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 20.0),
                 child: Text(
                   'No. $index image',
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: AppColors.white,
                     fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),

@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/common/custom_app_bar.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 
@@ -17,11 +19,11 @@ class FavouriteScreen extends StatelessWidget {
       body: Consumer<FavouriteViewModel>(
         builder: (BuildContext context, FavouriteViewModel favouriteViewModel, Widget? child) {
           if (favouriteViewModel.isLoading) {
-            return const Center(child: CustomCircularProgressIndicator());
+            return const Center(child: CustomProgressIndicator.CustomProgressIndicator());
           }
           if (favouriteViewModel.favouriteWallpapers.isEmpty) {
             return Center(
-              child: Text('No favourite wallpapers yet!', style: TextStyle(fontSize: 20.px)),
+              child: Text(AppStrings.noFavouriteWallpapers, style: TextStyle(fontSize: 20.px)),
             );
           }
           return CarouselSlider.builder(
@@ -46,9 +48,9 @@ class FavouriteScreen extends StatelessWidget {
                     child: Container(
                       alignment: Alignment.centerRight,
                       height: 50.h,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withOpacity(.1),
-                        borderRadius: const BorderRadius.only(
+                      decoration: const BoxDecoration(
+                       // color: AppColors.blackWithOpacity,
+                        borderRadius: BorderRadius.only(
                           bottomLeft: Radius.circular(20),
                           bottomRight: Radius.circular(20),
                         ),
@@ -61,7 +63,7 @@ class FavouriteScreen extends StatelessWidget {
                           favouriteViewModel.isFavourite(wallpaper)
                               ? Icons.favorite
                               : Icons.favorite_border,
-                          color: Colors.white,
+                          color: AppColors.red,
                         ),
                       ),
                     ),
@@ -70,8 +72,8 @@ class FavouriteScreen extends StatelessWidget {
               );
             },
             options: CarouselOptions(
-              height: MediaQuery.of(context).size.height * 0.8,
-              aspectRatio: 16 / 9,
+              height: MediaQuery.of(context).size.height * 0.7,
+              aspectRatio: 14 / 9,
               viewportFraction: 0.8,
               enlargeCenterPage: true,
               autoPlay: true,

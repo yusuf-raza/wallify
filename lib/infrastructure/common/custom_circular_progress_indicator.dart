@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:wallify/infrastructure/theme/app_colors.dart';
 
-class CustomCircularProgressIndicator extends StatelessWidget {
-  const CustomCircularProgressIndicator({super.key, this.color = Colors.white});
+class CustomProgressIndicator extends StatelessWidget {
+  const CustomProgressIndicator.CustomProgressIndicator({super.key, this.color = AppColors.white});
 
   final Color color;
 
@@ -10,7 +11,7 @@ class CustomCircularProgressIndicator extends StatelessWidget {
     return SizedBox(
       height: 20,
       width: 20,
-      child: CircularProgressIndicator(color: color),
+      child: CircularProgressIndicator.adaptive(backgroundColor: color),
     );
   }
 }

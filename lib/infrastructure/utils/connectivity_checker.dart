@@ -8,7 +8,7 @@ class ConnectivityCheckerImpl implements ConnectivityChecker {
   final GeneralUtils _generalUtils;
 
   ConnectivityCheckerImpl({GeneralUtils? generalUtils})
-      : _generalUtils = generalUtils ?? GeneralUtils();
+    : _generalUtils = generalUtils ?? GeneralUtils();
 
   @override
   Future<bool> isInternetAvailable() {

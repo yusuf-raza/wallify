@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
+import 'package:wallify/infrastructure/constants/shared_prefs_keys.dart';
 
 class FavouriteViewModel extends ChangeNotifier {
-  static const String _favouriteKey = 'favouriteWallpapers';
   List<WallhavenWallpaper> _favouriteWallpapers = <WallhavenWallpaper>[];
   bool _isLoading = false;
 
@@ -21,7 +21,7 @@ class FavouriteViewModel extends ChangeNotifier {
     notifyListeners();
 
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? favouritesString = prefs.getString(_favouriteKey);
+    final String? favouritesString = prefs.getString(SharedPrefsKeys.favouriteWallpapers);
     if (favouritesString != null) {
       final List<dynamic> jsonList = jsonDecode(favouritesString) as List<dynamic>;
       _favouriteWallpapers = jsonList
@@ -35,9 +35,10 @@ class FavouriteViewModel extends ChangeNotifier {
 
   Future<void> _saveFavourites() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final List<Map<String, dynamic>> jsonList =
-        _favouriteWallpapers.map((WallhavenWallpaper wallpaper) => wallpaper.toJson()).toList();
-    await prefs.setString(_favouriteKey, jsonEncode(jsonList));
+    final List<Map<String, dynamic>> jsonList = _favouriteWallpapers
+        .map((WallhavenWallpaper wallpaper) => wallpaper.toJson())
+        .toList();
+    await prefs.setString(SharedPrefsKeys.favouriteWallpapers, jsonEncode(jsonList));
   }
 
   void addOrRemoveFavourite(WallhavenWallpaper wallpaper) {
