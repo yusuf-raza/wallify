@@ -107,11 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: EdgeInsets.only(
                         bottom: 20.h,
                       ), // Add some padding from the bottom nav bar
-                      color: Theme.of(
-                        context,
-                      ).scaffoldBackgroundColor.withOpacity(0.8), // Semi-transparent background
                       alignment: Alignment.center,
-                      child: CustomProgressIndicator.CustomProgressIndicator(),
+                      child: const CustomProgressIndicator.CustomProgressIndicator(),
                     ),
                   );
                 }

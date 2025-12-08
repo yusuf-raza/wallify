@@ -1,11 +1,12 @@
-import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
@@ -27,7 +28,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
     final Color secondaryColor = fromHex(wallpaper.colors![1]);
 
     return MultiProvider(
-      providers: [
+      providers: <SingleChildWidget>[
         ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
       ],
       child: Consumer2<WallpaperDetailViewModel, FavouriteViewModel>(
@@ -51,40 +52,35 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 30.w),
                   child: Column(
                     children: <Widget>[
-                      ClipRRect(
-                        borderRadius: .circular(20),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) =>
-                                    FullScreenImageScreen(imageUrl: wallpaper.path!),
-                              ),
-                            );
-                          },
-                          child: Hero(
-                            tag: wallpaper.path!,
-                            child: CachedNetworkImage(
-                              height: 300.h,
-                              width: 300.w,
-                              imageUrl: wallpaper.path!,
-                              fit: BoxFit.cover,
-                              placeholder: (BuildContext context, String url) => Shimmer.fromColors(
-                                baseColor: secondaryColor,
-                                highlightColor: primaryColor,
-                                child: Container(
-                                  height: 300.h,
-                                  decoration: BoxDecoration(
-                                    color: AppColors.white,
-                                    borderRadius: .circular(20),
-                                  ),
-                                ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (BuildContext context) =>
+                                  FullScreenImageScreen(imageUrl: wallpaper.path!),
+                            ),
+                          );
+                        },
+                        child: Hero(
+                          tag: wallpaper.path!,
+                          child: CachedNetworkImage(
+                            height: 300.h,
+                            width: 300.w,
+                            imageUrl: wallpaper.path!,
+                            fit: BoxFit.cover,
+                            placeholder: (BuildContext context, String url) => Shimmer.fromColors(
+                              baseColor: secondaryColor,
+                              highlightColor: primaryColor,
+                              child: Container(
+                                height: 300.h,
+                                decoration: const BoxDecoration(color: AppColors.white),
                               ),
                             ),
                           ),
                         ),
                       ),
+
                       Column(
                         children: <Widget>[
                           Row(
