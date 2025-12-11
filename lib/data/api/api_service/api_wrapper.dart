@@ -3,21 +3,21 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 import 'package:wallify/data/api/api_service/api_response.dart';
-import 'package:wallify/infrastructure/utils/connectivity_checker.dart';
+import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 
 class ApiWrapper {
   final JsonDecoder _decoder = const JsonDecoder();
   final http.Client _client;
-  final ConnectivityChecker _connectivityChecker;
+  final ConnectivityService _connectivityService;
   final LoggerService _loggerService;
 
   ApiWrapper({
     http.Client? client,
-    ConnectivityChecker? connectivityChecker,
+    ConnectivityService? connectivityService,
     LoggerService? loggerService,
   }) : _client = client ?? http.Client(),
-       _connectivityChecker = connectivityChecker ?? ConnectivityCheckerImpl(),
+       _connectivityService = connectivityService ?? ConnectivityService(),
        _loggerService = loggerService ?? LoggerService.instance;
 
   static const Duration _requestTimeout = Duration(seconds: 30);
@@ -31,7 +31,7 @@ class ApiWrapper {
 
       _loggerService.logFatal('URL $urlString');
 
-      if (!await _connectivityChecker.isInternetAvailable()) {
+      if (!await _connectivityService.isConnected()) {
         _loggerService.logError('No active internet connection.');
         return null;
       }
@@ -76,7 +76,7 @@ class ApiWrapper {
       return ApiResponse(success: false);
     }
 
-    if (!await _connectivityChecker.isInternetAvailable()) {
+    if (!await _connectivityService.isConnected()) {
       _loggerService.logError('postApi No internet connection');
       return ApiResponse(success: false);
     }
@@ -124,7 +124,7 @@ class ApiWrapper {
       return ApiResponse(success: false);
     }
 
-    if (!await _connectivityChecker.isInternetAvailable()) {
+    if (!await _connectivityService.isConnected()) {
       _loggerService.logError('deleteApi No internet connection');
       return ApiResponse(success: false);
     }
@@ -168,7 +168,7 @@ class ApiWrapper {
       return ApiResponse(success: false);
     }
 
-    if (!await _connectivityChecker.isInternetAvailable()) {
+    if (!await _connectivityService.isConnected()) {
       _loggerService.logError('multipartPost No internet connection');
       return ApiResponse(success: false);
     }

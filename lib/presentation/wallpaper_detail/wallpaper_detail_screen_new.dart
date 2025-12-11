@@ -58,7 +58,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                             context,
                             MaterialPageRoute<void>(
                               builder: (BuildContext context) =>
-                                  FullScreenImageScreen(imageUrl: wallpaper.path!),
+                                  FullScreenImageScreen(wallpaper: wallpaper),
                             ),
                           );
                         },
@@ -67,7 +67,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                           child: CachedNetworkImage(
                             height: 300.h,
                             width: 300.w,
-                            imageUrl: wallpaper.path!,
+                            imageUrl: wallpaper.thumbs!.large!,
                             fit: BoxFit.cover,
                             placeholder: (BuildContext context, String url) => Shimmer.fromColors(
                               baseColor: secondaryColor,

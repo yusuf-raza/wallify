@@ -3,14 +3,14 @@ import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
-import 'package:wallify/presentation/base/controllers/base_view_model.dart';
+import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
 class BaseScreen extends StatelessWidget {
   const BaseScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return Consumer<BaseViewModel>(
-      builder: (BuildContext context, BaseViewModel controller, Widget? child) {
+    return Consumer<HomeViewModel>(
+      builder: (BuildContext context, HomeViewModel controller, Widget? child) {
         return Scaffold(
           body: IndexedStack(index: controller.currentIndex, children: controller.screens),
           bottomNavigationBar: SalomonBottomBar(

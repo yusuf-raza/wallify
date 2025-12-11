@@ -1,15 +1,20 @@
-import 'package:flutter/foundation.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
+import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 
-class HomeViewModel extends ChangeNotifier {
-  final WallpaperApi _wallpaperApi;
+class HomeViewModel extends BaseViewModel {
   final LoggerService _loggerService;
+  final WallpaperApi _wallpaperApi;
 
-  HomeViewModel({WallpaperApi? wallpaperApi, LoggerService? loggerService})
-    : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
-      _loggerService = loggerService ?? LoggerService.instance;
+  HomeViewModel({
+    LoggerService? loggerService,
+    super.connectivityService,
+    WallpaperApi? wallpaperApi,
+  }) : _loggerService = loggerService ?? LoggerService.instance,
+       _wallpaperApi = wallpaperApi ?? WallpaperApi() {
+    fetchData();
+  }
 
   int _currentPage = 1;
   bool gettingWallpapers = false;
@@ -17,7 +22,8 @@ class HomeViewModel extends ChangeNotifier {
 
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
 
-  Future<void> getWallpapers() async {
+  @override
+  Future<void> fetchData() async {
     gettingWallpapers = true;
     _currentPage = 1;
     wallpapers.clear();

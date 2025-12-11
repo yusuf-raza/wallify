@@ -1,37 +1,76 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
+import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 
 class FullScreenImageScreen extends StatelessWidget {
-  const FullScreenImageScreen({super.key, required this.imageUrl});
+  const FullScreenImageScreen({super.key, required this.wallpaper});
 
-  final String imageUrl;
+  final WallhavenWallpaper wallpaper;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTap: () {
-          Navigator.pop(context);
-        },
-        child: Center(
-          child: Hero(
-            tag: imageUrl,
-            child: InteractiveViewer(
-              panEnabled: true,
-              minScale: 0.5,
-              maxScale: 4,
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.contain,
-                placeholder: (BuildContext context, String url) =>
-                    const Center(child: CustomProgressIndicator.CustomProgressIndicator()),
-                errorWidget: (BuildContext context, String url, Object error) =>
-                    const Icon(Icons.error),
+      body: Stack(
+        children: <Widget>[
+          // Blurred background
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: CachedNetworkImageProvider(wallpaper.path!),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.black.withOpacity(0.2),
               ),
             ),
           ),
-        ),
+          // Foreground image
+          GestureDetector(
+            onTap: () {
+              Navigator.pop(context);
+            },
+            child: Center(
+              child: Hero(
+                tag: wallpaper.path!,
+                child: InteractiveViewer(
+                  panEnabled: true,
+                  minScale: 0.5,
+                  maxScale: 4,
+                  child: CachedNetworkImage(
+                    imageUrl: wallpaper.path!,
+                    fit: BoxFit.contain,
+                    progressIndicatorBuilder: (BuildContext context, String url,
+                            DownloadProgress downloadProgress) =>
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                            const SizedBox(height: 10),
+                            if (downloadProgress.progress != 1.0)
+                              Material(
+                                child: Text(
+                                  'Fetching full resolution wallpaper... ${((downloadProgress.progress ?? 0) * 100).toStringAsFixed(0)}%',
+                                  style: const TextStyle(
+                                      color: Colors.white, fontSize: 16),
+                                ),
+                              ),
+                          ],
+                        ),
+                    errorWidget:
+                        (BuildContext context, String url, Object error) =>
+                            const Icon(Icons.error),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -9,7 +9,6 @@ import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
-import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
 /// The main screen of the application, displaying a list of wallpapers.
@@ -23,15 +22,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Controller for the scroll view to detect when the user reaches the bottom.
   final ScrollController _scrollController = ScrollController();
-  late final BaseViewModel _baseViewModel;
+  late final HomeViewModel _baseViewModel;
 
   @override
   void initState() {
     super.initState();
-    _baseViewModel = Provider.of<BaseViewModel>(context, listen: false);
+    _baseViewModel = Provider.of<HomeViewModel>(context, listen: false);
     // Fetch initial wallpapers after the first frame is rendered.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<HomeViewModel>(context, listen: false).getWallpapers();
+      Provider.of<HomeViewModel>(context, listen: false).fetchData();
     });
     // Add a listener to the scroll controller to load more wallpapers on reaching the end.
     _scrollController.addListener(() {
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             RefreshIndicator(
               // Allows pull-to-refresh to fetch new wallpapers.
-              onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).getWallpapers(),
+              onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).fetchData(),
               child: CustomScrollView(
                 controller: _scrollController,
                 slivers: <Widget>[

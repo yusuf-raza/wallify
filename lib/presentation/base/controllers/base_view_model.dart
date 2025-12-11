@@ -1,17 +1,23 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
+import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/presentation/favourite/favourite.screen.dart';
 import 'package:wallify/presentation/home/home.screen.dart';
 import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
 
-class BaseViewModel extends ChangeNotifier {
-  final WallpaperApi _wallpaperApi;
+abstract class BaseViewModel extends ChangeNotifier {
   final StreamController<int> _doubleTapController = StreamController<int>.broadcast();
+  final ConnectivityService _connectivityService;
+  late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
+  bool _isOnline = true;
 
-  BaseViewModel() : _wallpaperApi = WallpaperApi() {
-    getWallpapers();
+  BaseViewModel({ConnectivityService? connectivityService})
+    : _connectivityService = connectivityService ?? ConnectivityService() {
+    _connectivitySubscription = _connectivityService.connectivityStream.listen(
+      onConnectivityChanged,
+    );
   }
 
   int _currentIndex = 0;
@@ -33,17 +39,22 @@ class BaseViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> getWallpapers() async {
-    try {
-      await _wallpaperApi.getWallpapers();
-    } catch (e) {
-      // Handle error
+  Future<void> onConnectivityChanged(List<ConnectivityResult> result) async {
+    final isOnline = !result.contains(ConnectivityResult.none);
+    if (_isOnline != isOnline) {
+      _isOnline = isOnline;
+      if (_isOnline) {
+        await fetchData();
+      }
     }
   }
+
+  Future<void> fetchData();
 
   @override
   void dispose() {
     _doubleTapController.close();
+    _connectivitySubscription.cancel();
     super.dispose();
   }
 }
