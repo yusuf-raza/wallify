@@ -8,10 +8,21 @@ class WallpaperApi {
 
   WallpaperApi() : _apiWrapper = ApiWrapper();
 
-  Future<List<WallhavenWallpaper>> getWallpapers({int page = 1}) async {
-    final Uri uri = Uri.parse(
-      Endpoints.baseURL,
-    ).replace(queryParameters: <String, String>{'page': page.toString()});
+  Future<List<WallhavenWallpaper>> getWallpapers({
+    int page = 1,
+    String? query,
+    String categories = '111',
+  }) async {
+    final Map<String, String> queryParameters = <String, String>{
+      'page': page.toString(),
+      'categories': categories,
+    };
+
+    if (query != null && query.isNotEmpty) {
+      queryParameters['q'] = query;
+    }
+
+    final Uri uri = Uri.parse(Endpoints.baseURL).replace(queryParameters: queryParameters);
 
     final ApiResponse? response = await _apiWrapper.getApi(url: uri.toString());
 
@@ -19,7 +30,7 @@ class WallpaperApi {
       throw Exception('Failed to load wallpapers');
     }
 
-    if (response.data == null) {
+    if (response.data == null || response.data['data'] == null) {
       throw Exception('Failed to load wallpapers: data is null');
     }
 

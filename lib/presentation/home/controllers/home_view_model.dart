@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 
@@ -19,12 +23,36 @@ class HomeViewModel extends BaseViewModel {
   int _currentPage = 1;
   bool gettingWallpapers = false;
   bool loadingMoreWallpapers = false;
+  String? errorMessage;
 
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
+
+  StreamSubscription<int>? _doubleTapSubscription;
+  ScrollController? _scrollController;
+
+  void init(ScrollController scrollController) {
+    _scrollController = scrollController;
+    _scrollController!.addListener(() {
+      if (_scrollController!.position.pixels == _scrollController!.position.maxScrollExtent) {
+        loadMoreWallpapers();
+      }
+    });
+
+    _doubleTapSubscription = doubleTapStream.listen((int index) {
+      if (index == 0 && _scrollController != null) {
+        _scrollController!.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
 
   @override
   Future<void> fetchData() async {
     gettingWallpapers = true;
+    errorMessage = null;
     _currentPage = 1;
     wallpapers.clear();
     notifyListeners();
@@ -37,6 +65,7 @@ class HomeViewModel extends BaseViewModel {
       _loggerService.logInfo('wallpapers length   ${wallpapers.length}');
     } catch (e) {
       _loggerService.logError('error in getWallpapers() $e');
+      errorMessage = AppStrings.failedToLoadWallpapers;
     } finally {
       gettingWallpapers = false;
       notifyListeners();
@@ -47,6 +76,7 @@ class HomeViewModel extends BaseViewModel {
     if (loadingMoreWallpapers) return;
 
     loadingMoreWallpapers = true;
+    errorMessage = null;
     notifyListeners();
 
     try {
@@ -59,9 +89,16 @@ class HomeViewModel extends BaseViewModel {
     } catch (e) {
       _currentPage--; // revert page number on error
       _loggerService.logError('error in loadMoreWallpapers() $e');
+      errorMessage ??= AppStrings.failedToLoadWallpapers;
     } finally {
       loadingMoreWallpapers = false;
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _doubleTapSubscription?.cancel();
+    super.dispose();
   }
 }

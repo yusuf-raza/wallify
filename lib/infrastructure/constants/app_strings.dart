@@ -14,4 +14,9 @@ class AppStrings {
   static final String favourite = 'Favourite';
   static const String save = 'Save';
   static const String set = 'Set';
+  static const String tryAgain = 'Try again';
+  static const String failedToLoadWallpapers = 'Failed to load wallpapers.';
+  static const String noWallpapersFound = 'No wallpapers found.';
+  static const String categories = 'Categories';
+  static const String exploreByCategory = 'Explore by category';
 }
