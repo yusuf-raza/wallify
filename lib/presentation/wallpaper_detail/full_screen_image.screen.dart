@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
+import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 
@@ -49,24 +50,8 @@ class FullScreenImageScreen extends StatelessWidget {
                     imageUrl: wallpaper.path!,
                     fit: BoxFit.contain,
                     progressIndicatorBuilder:
-                        (
-                          BuildContext context,
-                          String url,
-                          DownloadProgress downloadProgress,
-                        ) => Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            CircularProgressIndicator(value: downloadProgress.progress),
-                            const SizedBox(height: 10),
-                            if (downloadProgress.progress != 1.0)
-                              Material(
-                                child: Text(
-                                  'Fetching full resolution wallpaper... ${((downloadProgress.progress ?? 0) * 100).toStringAsFixed(0)}%',
-                                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                                ),
-                              ),
-                          ],
-                        ),
+                        (BuildContext context, String url, DownloadProgress downloadProgress) =>
+                            const CustomProgressIndicator.CustomProgressIndicator(),
                     errorWidget: (BuildContext context, String url, Object error) =>
                         const Icon(Icons.error),
                   ),

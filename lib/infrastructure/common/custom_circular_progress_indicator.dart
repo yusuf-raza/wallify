@@ -8,10 +8,17 @@ class CustomProgressIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 20,
-      width: 20,
-      child: CircularProgressIndicator.adaptive(backgroundColor: color),
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.4),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: SizedBox(
+        height: 20,
+        width: 20,
+        child: CircularProgressIndicator.adaptive(backgroundColor: color),
+      ),
     );
   }
 }

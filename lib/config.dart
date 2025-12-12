@@ -7,14 +7,14 @@ class Environments {
 
 class ConfigEnvironments {
   static const String _currentEnvironments = Environments.LOCAL;
-  static final List<Map<String, String>> _availableEnvironments = [
-    {'env': Environments.LOCAL, 'url': 'http://localhost:8080/api/'},
-    {'env': Environments.DEV, 'url': ''},
-    {'env': Environments.QAS, 'url': ''},
-    {'env': Environments.PRODUCTION, 'url': ''},
+  static final List<Map<String, String>> _availableEnvironments = <Map<String, String>>[
+    <String, String>{'env': Environments.LOCAL, 'url': 'http://localhost:8080/api/'},
+    <String, String>{'env': Environments.DEV, 'url': ''},
+    <String, String>{'env': Environments.QAS, 'url': ''},
+    <String, String>{'env': Environments.PRODUCTION, 'url': ''},
   ];
 
   static Map<String, String> getEnvironments() {
-    return _availableEnvironments.firstWhere((d) => d['env'] == _currentEnvironments);
+    return _availableEnvironments.firstWhere((Map<String, String> d) => d['env'] == _currentEnvironments);
   }
 }

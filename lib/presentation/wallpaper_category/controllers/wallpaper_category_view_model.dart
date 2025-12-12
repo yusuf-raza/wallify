@@ -32,15 +32,16 @@ class WallpaperCategoryViewModel extends BaseViewModel {
     CategoryFilter(label: 'Animals', query: 'animals'),
     CategoryFilter(label: 'Anime', query: 'anime'),
     CategoryFilter(label: 'Art', query: 'art'),
-    CategoryFilter(label: 'Astrophotography', query: 'astrophotography'),
     CategoryFilter(label: 'Beach', query: 'beach'),
     CategoryFilter(label: 'Black & White', query: 'black and white'),
     CategoryFilter(label: 'Cities', query: 'city'),
+    CategoryFilter(label: 'Dark', query: 'dark'),
     CategoryFilter(label: 'Fantasy', query: 'fantasy'),
     CategoryFilter(label: 'Fashion', query: 'fashion'),
     CategoryFilter(label: 'Fitness', query: 'fitness'),
     CategoryFilter(label: 'Food', query: 'food'),
     CategoryFilter(label: 'History', query: 'history'),
+    CategoryFilter(label: 'Hot', query: 'hot'),
     CategoryFilter(label: 'Inspiration', query: 'inspiration quotes'),
     CategoryFilter(label: 'Mountains', query: 'mountains'),
     CategoryFilter(label: 'Music', query: 'music'),
@@ -85,6 +86,7 @@ class WallpaperCategoryViewModel extends BaseViewModel {
     await fetchData();
   }
 
+  @override
   Future<void> fetchData() async {
     isLoading = true;
     isLoadingMore = false;

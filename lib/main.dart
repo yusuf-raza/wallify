@@ -48,7 +48,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _connectivitySubscription = ConnectivityService().connectivityStream.listen((result) {
+    _connectivitySubscription = ConnectivityService().connectivityStream.listen((List<ConnectivityResult> result) {
       setState(() {
         _isOffline = result.contains(ConnectivityResult.none);
       });
@@ -68,7 +68,7 @@ class _MyAppState extends State<MyApp> {
           darkTheme: ThemeData.dark(),
           builder: (BuildContext context, Widget? child) {
             Responsive.init(context);
-            return Stack(children: [child!, if (_isOffline) _buildOfflineBanner()]);
+            return Stack(children: <Widget>[child!, if (_isOffline) _buildOfflineBanner()]);
           },
         );
       },

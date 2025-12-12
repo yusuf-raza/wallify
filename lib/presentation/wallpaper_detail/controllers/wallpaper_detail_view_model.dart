@@ -52,7 +52,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         _loggerService.logError('Failed to get root isolate token');
         return;
       }
-      await compute(_setWallpaperIsolate, {
+      await compute(_setWallpaperIsolate, <String, Object>{
         'imageUrl': imageUrl,
         'location': location,
         'token': token,

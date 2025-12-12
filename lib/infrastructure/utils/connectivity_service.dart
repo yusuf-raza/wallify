@@ -25,7 +25,7 @@ class ConnectivityService {
       if (kDebugMode) {
         print('Error initializing connectivity: $e');
       }
-      result = [ConnectivityResult.none];
+      result = <ConnectivityResult>[ConnectivityResult.none];
     }
 
     _connectivityController.add(result);
@@ -36,7 +36,7 @@ class ConnectivityService {
   }
 
   Future<bool> isConnected() async {
-    final result = await _connectivity.checkConnectivity();
+    final List<ConnectivityResult> result = await _connectivity.checkConnectivity();
     return result.isNotEmpty && result.first != ConnectivityResult.none;
   }
 

@@ -14,9 +14,9 @@ extension ResponsiveDimensions on num {
 
   /// Scales a radius value based on the minimum of width and height scale factors.
   double get r {
-    final mediaQuery = MediaQueryData.fromView(WidgetsBinding.instance.window);
-    final scaleWidth = mediaQuery.size.width / _designWidth;
-    final scaleHeight = mediaQuery.size.height / _designHeight;
+    final MediaQueryData mediaQuery = MediaQueryData.fromView(WidgetsBinding.instance.window);
+    final double scaleWidth = mediaQuery.size.width / _designWidth;
+    final double scaleHeight = mediaQuery.size.height / _designHeight;
     return this * (scaleWidth < scaleHeight ? scaleWidth : scaleHeight);
   }
 

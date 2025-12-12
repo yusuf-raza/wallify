@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/utils/connectivity_service.dart';
-import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/presentation/favourite/favourite.screen.dart';
 import 'package:wallify/presentation/home/home.screen.dart';
 import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
@@ -41,7 +40,7 @@ abstract class BaseViewModel extends ChangeNotifier {
   }
 
   Future<void> onConnectivityChanged(List<ConnectivityResult> result) async {
-    final isOnline = !result.contains(ConnectivityResult.none);
+    final bool isOnline = !result.contains(ConnectivityResult.none);
     if (_isOnline != isOnline) {
       _isOnline = isOnline;
       if (_isOnline) {

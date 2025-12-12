@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/common/grid_item.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
@@ -72,25 +73,10 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
                   child: CustomScrollView(
                     controller: _scrollController,
                     slivers: <Widget>[
-                      // SliverAppBar(
-                      //   floating: true,
-                      //   snap: true,
-                      //   title: Text(
-                      //     AppStrings.appTitle,
-                      //     style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-                      //   ),
-                      //   actions: <Widget>[
-                      //     IconButton(
-                      //       icon: const Icon(Icons.filter_list),
-                      //       onPressed: () => _showCategoryFilterBottomSheet(context, viewModel),
-                      //     ),
-                      //   ],
-                      //   centerTitle: true,
-                      // ),
                       SliverAppBar(
                         centerTitle: true,
                         floating: true,
-                        snap: true,
+                       // snap: true,
                         pinned: false,
                         title: Text(
                           AppStrings.appTitle,
@@ -105,9 +91,9 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
                         bottom: PreferredSize(
                           preferredSize: Size.fromHeight(70.h),
                           child: Padding(
-                            padding: EdgeInsets.only(left: 8.w, right: 8.w, bottom: 8.h),
+                            padding: EdgeInsets.only(bottom: 8.h),
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16),
+                              borderRadius: BorderRadius.circular(16.r),
                               child: Container(
                                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                                 decoration: const BoxDecoration(
@@ -137,16 +123,17 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
                                         onTap: () => viewModel.selectCategory(filter),
                                         borderRadius: BorderRadius.circular(20),
                                         child: Container(
+                                          alignment: Alignment.center,
                                           padding: EdgeInsets.symmetric(
                                             horizontal: 12.w,
                                             vertical: 10.h,
                                           ),
                                           decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20),
+                                            borderRadius: BorderRadius.circular(20.r),
                                             border: Border.all(color: borderColor.withOpacity(0.7)),
                                             color: isSelected
-                                                ? borderColor.withOpacity(0.2)
-                                                : Colors.white.withOpacity(0.05),
+                                                ? borderColor.withOpacity(0.3)
+                                                : Colors.white.withOpacity(0.0),
                                           ),
                                           child: Text(
                                             filter.label,
@@ -191,18 +178,18 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
                           }
 
                           return SliverPadding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+                            padding: EdgeInsets.symmetric(horizontal: 2.w,),
                             sliver: SliverMasonryGrid(
                               gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
                               ),
-                              mainAxisSpacing: 10,
-                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 5,
+                              crossAxisSpacing: 5,
                               delegate: SliverChildBuilderDelegate((
                                 BuildContext context,
                                 int index,
                               ) {
-                                final wallpaper = viewModel.wallpapers[index];
+                                final WallhavenWallpaper wallpaper = viewModel.wallpapers[index];
                                 return Hero(
                                   tag: wallpaper.path!,
                                   child: GridItem(
@@ -222,19 +209,12 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
                   ),
                 ),
                 if (viewModel.isLoadingMore)
-                  Positioned(
+                  const Positioned(
                     bottom: 16,
                     left: 0,
                     right: 0,
                     child: Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.4),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const CustomProgressIndicator.CustomProgressIndicator(),
-                      ),
+                      child: CustomProgressIndicator.CustomProgressIndicator(),
                     ),
                   ),
               ],
@@ -307,7 +287,7 @@ class _ErrorView extends StatelessWidget {
           children: <Widget>[
             Text(message, textAlign: TextAlign.center),
             SizedBox(height: 12.h),
-            ElevatedButton(onPressed: onRetry, child: Text(AppStrings.tryAgain)),
+            ElevatedButton(onPressed: onRetry, child: const Text(AppStrings.tryAgain)),
           ],
         ),
       ),
