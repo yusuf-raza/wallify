@@ -41,9 +41,12 @@ class WallpaperDetailScreenNew extends StatelessWidget {
             ) {
               return Scaffold(
                 appBar: AppBar(
-                  leading: IconButton(
+                  leading: IconButton.filled(
+                    //color: AppColors.white,
+                    style: IconButton.styleFrom(backgroundColor: primaryColor),
+
                     onPressed: () => context.pop(),
-                    icon: Icon(Icons.keyboard_backspace, color: primaryColor),
+                    icon: const Icon(Icons.keyboard_backspace, color: AppColors.white),
                   ),
                   backgroundColor: secondaryColor,
                 ),
