@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
@@ -13,12 +14,14 @@ class CategoryFilter {
   final String query;
 }
 
-class WallpaperCategoryViewModel extends ChangeNotifier {
+class WallpaperCategoryViewModel extends BaseViewModel {
   WallpaperCategoryViewModel({
     WallpaperApi? wallpaperApi,
     LoggerService? loggerService,
+    super.connectivityService,
   })  : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
-        _loggerService = loggerService ?? LoggerService.instance;
+        _loggerService = loggerService ?? LoggerService.instance,
+        super();
 
   final WallpaperApi _wallpaperApi;
   final LoggerService _loggerService;
