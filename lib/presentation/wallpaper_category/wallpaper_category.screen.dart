@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -34,6 +35,7 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
   late final WallpaperCategoryViewModel _viewModel;
   late final HomeViewModel _homeNavViewModel;
   StreamSubscription<int>? _navDoubleTapSubscription;
+  bool _hasInitialized = false;
 
   @override
   void initState() {
@@ -41,7 +43,6 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
     _scrollController = ScrollController();
     _viewModel = Provider.of<WallpaperCategoryViewModel>(context, listen: false);
     _homeNavViewModel = Provider.of<HomeViewModel>(context, listen: false);
-    _viewModel.init(_scrollController);
     _navDoubleTapSubscription = _homeNavViewModel.doubleTapStream.listen((int index) {
       if (index == 1 && _scrollController.hasClients) {
         _scrollController.animateTo(
@@ -62,164 +63,180 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Consumer<WallpaperCategoryViewModel>(
-          builder: (BuildContext context, WallpaperCategoryViewModel viewModel, Widget? child) {
-            return Stack(
-              children: <Widget>[
-                RefreshIndicator(
-                  onRefresh: viewModel.fetchData,
-                  child: CustomScrollView(
-                    controller: _scrollController,
-                    slivers: <Widget>[
-                      SliverAppBar(
-                        centerTitle: true,
-                        floating: true,
-                       // snap: true,
-                        pinned: false,
-                        title: Text(
-                          AppStrings.appTitle,
-                          style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-                        ),
-                        actions: <Widget>[
-                          IconButton(
-                            icon: const Icon(Icons.filter_list),
-                            onPressed: () => _showCategoryFilterBottomSheet(context, viewModel),
-                          ),
-                        ],
-                        bottom: PreferredSize(
-                          preferredSize: Size.fromHeight(70.h),
-                          child: Padding(
-                            padding: EdgeInsets.only(bottom: 8.h),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(16.r),
-                              child: Container(
-                                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                decoration: const BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: <Color>[
-                                      AppColors.purple,
-                                      AppColors.pink,
-                                      AppColors.orange,
-                                    ],
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                  ),
-                                ),
-                                child: SizedBox(
-                                  height: 52.h,
-                                  child: ListView.separated(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: viewModel.filters.length,
-                                    separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                                    itemBuilder: (BuildContext context, int index) {
-                                      final CategoryFilter filter = viewModel.filters[index];
-                                      final bool isSelected = filter == viewModel.selectedFilter;
-                                      final Color borderColor = Colors.white;
-                                      final Color textColor = Colors.white;
-
-                                      return InkWell(
-                                        onTap: () => viewModel.selectCategory(filter),
-                                        borderRadius: BorderRadius.circular(20),
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 12.w,
-                                            vertical: 10.h,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(20.r),
-                                            border: Border.all(color: borderColor.withOpacity(0.7)),
-                                            color: isSelected
-                                                ? borderColor.withOpacity(0.3)
-                                                : Colors.white.withOpacity(0.0),
-                                          ),
-                                          child: Text(
-                                            filter.label,
-                                            style: TextStyle(color: textColor),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ),
+    return Consumer<HomeViewModel>(
+      builder: (BuildContext context, HomeViewModel homeNavViewModel, Widget? child) {
+        _initializeIfNeeded(homeNavViewModel);
+        return child!;
+      },
+      child: Scaffold(
+        body: SafeArea(
+          child: Consumer<WallpaperCategoryViewModel>(
+            builder: (BuildContext context, WallpaperCategoryViewModel viewModel, Widget? child) {
+              return Stack(
+                children: <Widget>[
+                  NotificationListener<UserScrollNotification>(
+                    onNotification: (UserScrollNotification notification) {
+                      if (notification.direction == ScrollDirection.reverse) {
+                        _homeNavViewModel.setBottomBarVisible(false);
+                      } else if (notification.direction == ScrollDirection.forward) {
+                        _homeNavViewModel.setBottomBarVisible(true);
+                      }
+                      return false;
+                    },
+                    child: RefreshIndicator(
+                      onRefresh: viewModel.fetchData,
+                      child: CustomScrollView(
+                        controller: _scrollController,
+                        slivers: <Widget>[
+                          SliverAppBar(
+                            centerTitle: true,
+                            floating: true,
+                           // snap: true,
+                            pinned: false,
+                            title: Text(
+                              AppStrings.appTitle,
+                              style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
                             ),
-                          ),
-                        ),
-                      ),
-                      Builder(
-                        builder: (BuildContext context) {
-                          if (viewModel.isLoading && viewModel.wallpapers.isEmpty) {
-                            return const SliverFillRemaining(
-                              child: Center(
-                                child: CustomProgressIndicator.CustomProgressIndicator(),
+                            actions: <Widget>[
+                              IconButton(
+                                icon: const Icon(Icons.filter_list),
+                                onPressed: () => _showCategoryFilterBottomSheet(context, viewModel),
                               ),
-                            );
-                          }
+                            ],
+                            bottom: PreferredSize(
+                              preferredSize: Size.fromHeight(70.h),
+                              child: Padding(
+                                padding: EdgeInsets.only(bottom: 8.h),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(16.r),
+                                  child: Container(
+                                    padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+                                    decoration: const BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: <Color>[
+                                          AppColors.purple,
+                                          AppColors.pink,
+                                          AppColors.orange,
+                                        ],
+                                        begin: Alignment.centerLeft,
+                                        end: Alignment.centerRight,
+                                      ),
+                                    ),
+                                    child: SizedBox(
+                                      height: 52.h,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: viewModel.filters.length,
+                                        separatorBuilder: (_, __) => SizedBox(width: 8.w),
+                                        itemBuilder: (BuildContext context, int index) {
+                                          final CategoryFilter filter = viewModel.filters[index];
+                                          final bool isSelected = filter == viewModel.selectedFilter;
+                                          final Color borderColor = Colors.white;
+                                          final Color textColor = Colors.white;
 
-                          if (viewModel.errorMessage != null && viewModel.wallpapers.isEmpty) {
-                            return SliverFillRemaining(
-                              child: _ErrorView(
-                                message: viewModel.errorMessage!,
-                                onRetry: viewModel.fetchData,
-                              ),
-                            );
-                          }
-
-                          if (viewModel.wallpapers.isEmpty) {
-                            return SliverFillRemaining(
-                              child: _ErrorView(
-                                message: AppStrings.noWallpapersFound,
-                                onRetry: viewModel.fetchData,
-                              ),
-                            );
-                          }
-
-                          return SliverPadding(
-                            padding: EdgeInsets.symmetric(horizontal: 2.w,),
-                            sliver: SliverMasonryGrid(
-                              gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                              ),
-                              mainAxisSpacing: 5,
-                              crossAxisSpacing: 5,
-                              delegate: SliverChildBuilderDelegate((
-                                BuildContext context,
-                                int index,
-                              ) {
-                                final WallhavenWallpaper wallpaper = viewModel.wallpapers[index];
-                                return Hero(
-                                  tag: wallpaper.path!,
-                                  child: GridItem(
-                                    wallpaper: wallpaper,
-                                    onTap: () => context.push(
-                                      AppRouter.wallpaperDetailNew,
-                                      extra: wallpaper,
+                                          return InkWell(
+                                            onTap: () => viewModel.selectCategory(filter),
+                                            borderRadius: BorderRadius.circular(20),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 12.w,
+                                                vertical: 10.h,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                borderRadius: BorderRadius.circular(20.r),
+                                                border: Border.all(color: borderColor.withOpacity(0.7)),
+                                                color: isSelected
+                                                    ? borderColor.withOpacity(0.3)
+                                                    : Colors.white.withOpacity(0.0),
+                                              ),
+                                              child: Text(
+                                                filter.label,
+                                                style: TextStyle(color: textColor),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
                                     ),
                                   ),
-                                );
-                              }, childCount: viewModel.wallpapers.length),
+                                ),
+                              ),
                             ),
-                          );
-                        },
+                          ),
+                          Builder(
+                            builder: (BuildContext context) {
+                              if (viewModel.isLoading && viewModel.wallpapers.isEmpty) {
+                                return const SliverFillRemaining(
+                                  child: Center(
+                                    child: CustomProgressIndicator.CustomProgressIndicator(),
+                                  ),
+                                );
+                              }
+
+                              if (viewModel.errorMessage != null && viewModel.wallpapers.isEmpty) {
+                                return SliverFillRemaining(
+                                  child: _ErrorView(
+                                    message: viewModel.errorMessage!,
+                                    onRetry: viewModel.fetchData,
+                                  ),
+                                );
+                              }
+
+                              if (viewModel.wallpapers.isEmpty) {
+                                return SliverFillRemaining(
+                                  child: _ErrorView(
+                                    message: AppStrings.noWallpapersFound,
+                                    onRetry: viewModel.fetchData,
+                                  ),
+                                );
+                              }
+
+                              return SliverPadding(
+                                padding: EdgeInsets.symmetric(horizontal: 2.w,),
+                                sliver: SliverMasonryGrid(
+                                  gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                  ),
+                                  mainAxisSpacing: 5,
+                                  crossAxisSpacing: 5,
+                                  delegate: SliverChildBuilderDelegate((
+                                    BuildContext context,
+                                    int index,
+                                  ) {
+                                    final WallhavenWallpaper wallpaper = viewModel.wallpapers[index];
+                                    return Hero(
+                                      tag: wallpaper.path!,
+                                      child: GridItem(
+                                        wallpaper: wallpaper,
+                                        onTap: () => context.push(
+                                          AppRouter.wallpaperDetailNew,
+                                          extra: wallpaper,
+                                        ),
+                                      ),
+                                    );
+                                  }, childCount: viewModel.wallpapers.length),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                if (viewModel.isLoadingMore)
-                  const Positioned(
-                    bottom: 16,
-                    left: 0,
-                    right: 0,
-                    child: Center(
-                      child: CustomProgressIndicator.CustomProgressIndicator(),
                     ),
                   ),
-              ],
-            );
-          },
+                  if (viewModel.isLoadingMore)
+                    const Positioned(
+                      bottom: 16,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: CustomProgressIndicator.CustomProgressIndicator(),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -228,6 +245,7 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
   void _showCategoryFilterBottomSheet(BuildContext context, WallpaperCategoryViewModel viewModel) {
     showModalBottomSheet<void>(
       context: context,
+      backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
@@ -236,38 +254,71 @@ class _WallpaperCategoryViewState extends State<_WallpaperCategoryView> {
           minChildSize: 0.3,
           maxChildSize: 0.9,
           builder: (BuildContext context, ScrollController controller) {
-            return Padding(
-              padding: EdgeInsets.all(16.w),
-              child: ListView(
-                controller: controller,
-                children: <Widget>[
-                  Text(
-                    AppStrings.categories,
-                    style: TextStyle(fontSize: 18.w, fontWeight: FontWeight.bold),
+            return ClipRRect(
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+              child: Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: <Color>[
+                      AppColors.purple,
+                      AppColors.pink,
+                      AppColors.orange,
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
-                  SizedBox(height: 12.h),
-                  Wrap(
-                    spacing: 8.w,
-                    runSpacing: 8.h,
-                    children: viewModel.filters.map((CategoryFilter filter) {
-                      final bool isSelected = filter == viewModel.selectedFilter;
-                      return ChoiceChip(
-                        label: Text(filter.label),
-                        selected: isSelected,
-                        onSelected: (_) {
-                          viewModel.selectCategory(filter);
-                          Navigator.pop(context);
-                        },
-                      );
-                    }).toList(),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(16.w),
+                  child: ListView(
+                    controller: controller,
+                    children: <Widget>[
+                      Text(
+                        AppStrings.categories,
+                        style: TextStyle(
+                          fontSize: 18.w,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      Wrap(
+                        spacing: 8.w,
+                        runSpacing: 8.h,
+                        children: viewModel.filters.map((CategoryFilter filter) {
+                          final bool isSelected = filter == viewModel.selectedFilter;
+                          return ChoiceChip(
+                            label: Text(filter.label, style: const TextStyle(color: Colors.white)),
+                            selected: isSelected,
+                            selectedColor: Colors.white.withOpacity(0.2),
+                            backgroundColor: Colors.white.withOpacity(0.1),
+                            onSelected: (_) {
+                              viewModel.selectCategory(filter);
+                              Navigator.pop(context);
+                            },
+                          );
+                        }).toList(),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             );
           },
         );
       },
     );
+  }
+
+  void _initializeIfNeeded(HomeViewModel homeNavViewModel) {
+    if (_hasInitialized || homeNavViewModel.currentIndex != 1) {
+      return;
+    }
+    _hasInitialized = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _viewModel.init(_scrollController);
+    });
   }
 }
 

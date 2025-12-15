@@ -6,6 +6,7 @@ import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 import 'package:wallify/presentation/home/widgets/wallpaper_grid.dart';
+import 'package:flutter/rendering.dart';
 
 /// The main screen of the application, displaying a list of wallpapers.
 class HomeScreen extends StatefulWidget {
@@ -40,34 +41,46 @@ class _HomeScreenState extends State<HomeScreen> {
       body: SafeArea(
         child: Stack(
           children: <Widget>[
-            RefreshIndicator(
-              // Allows pull-to-refresh to fetch new wallpapers.
-              onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).fetchData(),
-              child: CustomScrollView(
-                controller: _scrollController,
-                slivers: <Widget>[
-                  SliverAppBar(
-                    title: Text(
-                      AppStrings.appTitle,
-                      style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
-                    ),
-                    actions: <Widget>[
-                      // Theme toggle button.
-                      Consumer<ThemeViewModel>(
-                        builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
-                            IconButton(
-                              icon: const Icon(Icons.dark_mode, size: 25),
-                              onPressed: theme.toggleTheme,
-                            ),
+            NotificationListener<UserScrollNotification>(
+              onNotification: (UserScrollNotification notification) {
+                final HomeViewModel controller =
+                    Provider.of<HomeViewModel>(context, listen: false);
+                if (notification.direction == ScrollDirection.reverse) {
+                  controller.setBottomBarVisible(false);
+                } else if (notification.direction == ScrollDirection.forward) {
+                  controller.setBottomBarVisible(true);
+                }
+                return false;
+              },
+              child: RefreshIndicator(
+                // Allows pull-to-refresh to fetch new wallpapers.
+                onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).fetchData(),
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  slivers: <Widget>[
+                    SliverAppBar(
+                      title: Text(
+                        AppStrings.appTitle,
+                        style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
                       ),
-                    ],
-                    centerTitle: true,
-                    pinned: false,
-                    floating: true,
-                  ),
-                  // The grid of wallpapers.
-                  const WallpaperGrid(),
-                ],
+                      actions: <Widget>[
+                        // Theme toggle button.
+                        Consumer<ThemeViewModel>(
+                          builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
+                              IconButton(
+                                icon: const Icon(Icons.dark_mode, size: 25),
+                                onPressed: theme.toggleTheme,
+                              ),
+                        ),
+                      ],
+                      centerTitle: true,
+                      pinned: false,
+                      floating: true,
+                    ),
+                    // The grid of wallpapers.
+                    const WallpaperGrid(),
+                  ],
+                ),
               ),
             ),
             // Positioned loading indicator at the bottom

@@ -24,6 +24,7 @@ class HomeViewModel extends BaseViewModel {
   bool gettingWallpapers = false;
   bool loadingMoreWallpapers = false;
   String? errorMessage;
+  bool _isBottomBarVisible = true;
 
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
 
@@ -100,5 +101,15 @@ class HomeViewModel extends BaseViewModel {
   void dispose() {
     _doubleTapSubscription?.cancel();
     super.dispose();
+  }
+
+  bool get isBottomBarVisible => _isBottomBarVisible;
+
+  void setBottomBarVisible(bool isVisible) {
+    if (_isBottomBarVisible == isVisible) {
+      return;
+    }
+    _isBottomBarVisible = isVisible;
+    notifyListeners();
   }
 }
