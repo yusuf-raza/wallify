@@ -1,3 +1,4 @@
+import 'package:easy_animated_indexed_stack/easy_animated_indexed_stack.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
@@ -12,7 +13,10 @@ class BaseScreen extends StatelessWidget {
     return Consumer<HomeViewModel>(
       builder: (BuildContext context, HomeViewModel controller, Widget? child) {
         return Scaffold(
-          body: IndexedStack(index: controller.currentIndex, children: controller.screens),
+          body: EasyAnimatedIndexedStack(
+            index: controller.currentIndex,
+            children: controller.screens,
+          ),
           bottomNavigationBar: SalomonBottomBar(
             currentIndex: controller.currentIndex,
             onTap: (int index) {
