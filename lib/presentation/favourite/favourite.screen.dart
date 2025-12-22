@@ -11,6 +11,7 @@ import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
+import 'package:wallify/presentation/favourite/widgets/quick_action_button.dart';
 
 class FavouriteScreen extends StatelessWidget {
   const FavouriteScreen({super.key});
@@ -209,7 +210,10 @@ class FavouriteScreen extends StatelessWidget {
                     final String title = wallpaper.id ?? 'Wallpaper ${index + 1}';
                     final String subtitle = wallpaper.resolution ?? 'Resolution unavailable';
                     return GestureDetector(
-                      onTap: () => context.push(AppRouter.wallpaperDetailNew, extra: wallpaper),
+                      onTap: () => context.push(
+                        AppRouter.wallpaperDetailNew,
+                        extra: <String, Object?>{'wallpaper': wallpaper},
+                      ),
                       child: Stack(
                         fit: StackFit.expand,
                         children: <Widget>[
@@ -280,15 +284,15 @@ class FavouriteScreen extends StatelessWidget {
                                     spacing: 8.w,
                                     runSpacing: 4.h,
                                     children: <Widget>[
-                                      _QuickActionButton(
+                                      QuickActionButton(
                                         icon: Icons.wallpaper,
                                         label: AppStrings.set,
                                         onPressed: () => context.push(
                                           AppRouter.wallpaperDetailNew,
-                                          extra: wallpaper,
+                                          extra: <String, Object?>{'wallpaper': wallpaper},
                                         ),
                                       ),
-                                      _QuickActionButton(
+                                      QuickActionButton(
                                         icon: Icons.download,
                                         label: favouriteViewModel.isDownloading
                                             ? 'Downloading...'
@@ -374,39 +378,6 @@ class FavouriteScreen extends StatelessWidget {
           );
         },
       ),
-    );
-  }
-}
-
-class _QuickActionButton extends StatelessWidget {
-  const _QuickActionButton({
-    required this.icon,
-    required this.label,
-    required this.onPressed,
-    this.isBusy = false,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback? onPressed;
-  final bool isBusy;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton.icon(
-      onPressed: onPressed,
-      icon: isBusy
-          ? SizedBox(
-              width: 16.r,
-              height: 16.r,
-              child: const CircularProgressIndicator(strokeWidth: 2),
-            )
-          : Icon(icon, color: AppColors.white, size: 18),
-      label: Text(
-        label,
-        style: TextStyle(color: AppColors.white, fontSize: 12.px),
-      ),
-      style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 8.w)),
     );
   }
 }

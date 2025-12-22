@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
-class BuildInfoRow extends StatelessWidget {
-  const BuildInfoRow({super.key, required this.icon, required this.text, required this.color});
+class DetailInfoRow extends StatelessWidget {
+  const DetailInfoRow({
+    super.key,
+    required this.icon,
+    required this.text,
+    required this.color,
+  });
 
   final IconData icon;
   final String text;

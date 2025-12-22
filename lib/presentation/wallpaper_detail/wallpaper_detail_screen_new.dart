@@ -5,7 +5,6 @@ import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
-import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
@@ -14,13 +13,21 @@ import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/full_screen_image.screen.dart';
-import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
+import 'package:wallify/presentation/wallpaper_detail/widgets/detail_action_button.dart';
+import 'package:wallify/presentation/wallpaper_detail/widgets/detail_info_row.dart';
+import 'package:wallify/presentation/wallpaper_detail/widgets/set_wallpaper_bottom_sheet.dart';
 
 class WallpaperDetailScreenNew extends StatelessWidget {
-  const WallpaperDetailScreenNew({super.key, required this.wallpaper, this.loggerService});
+  const WallpaperDetailScreenNew({
+    super.key,
+    required this.wallpaper,
+    this.loggerService,
+    this.heroTag,
+  });
 
   final WallhavenWallpaper wallpaper;
   final LoggerService? loggerService;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +67,15 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  FullScreenImageScreen(wallpaper: wallpaper),
+                              builder: (BuildContext context) => FullScreenImageScreen(
+                                wallpaper: wallpaper,
+                                heroTag: heroTag,
+                              ),
                             ),
                           );
                         },
                         child: Hero(
-                          tag: wallpaper.path!,
+                          tag: heroTag ?? wallpaper.path ?? wallpaper.id ?? 'wallpaper-hero',
                           child: CachedNetworkImage(
                             height: 300.h,
                             width: 300.w,
@@ -106,19 +115,19 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                           Row(
                             mainAxisAlignment: .spaceBetween,
                             children: <Widget>[
-                              _buildButton(
+                              DetailActionButton(
                                 icon: Icons.save_alt,
                                 label: AppStrings.save,
                                 color: primaryColor,
                                 onTap: () => viewModel.saveWallpaper(wallpaper.path!),
-                                isDownloading: viewModel.isDownloading,
+                                isLoading: viewModel.isDownloading,
                               ),
-                              _buildButton(
+                              DetailActionButton(
                                 icon: Icons.image_outlined,
                                 label: AppStrings.set,
                                 color: primaryColor,
-                                isDownloading: viewModel.isSettingWallpaper,
-                                onTap: () => _showSetWallpaperBottomSheet(
+                                isLoading: viewModel.isSettingWallpaper,
+                                onTap: () => showSetWallpaperBottomSheet(
                                   context,
                                   viewModel,
                                   wallpaper.path!,
@@ -132,22 +141,22 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                       Column(
                         spacing: 3.h,
                         children: <Widget>[
-                          _buildInfoRow(
+                          DetailInfoRow(
                             icon: Icons.category,
                             text: wallpaper.category!,
                             color: primaryColor,
                           ),
-                          _buildInfoRow(
+                          DetailInfoRow(
                             icon: Icons.photo_size_select_actual_outlined,
                             text: '${wallpaper.dimensionX} x ${wallpaper.dimensionY}',
                             color: primaryColor,
                           ),
-                          _buildInfoRow(
+                          DetailInfoRow(
                             icon: Icons.folder,
                             text: '${(wallpaper.fileSize! / (1024 * 1024)).toStringAsFixed(2)} MB',
                             color: primaryColor,
                           ),
-                          _buildInfoRow(
+                          DetailInfoRow(
                             icon: Icons.privacy_tip_outlined,
                             text: wallpaper.purity!,
                             color: primaryColor,
@@ -160,97 +169,6 @@ class WallpaperDetailScreenNew extends StatelessWidget {
               );
             },
       ),
-    );
-  }
-
-  void _showSetWallpaperBottomSheet(
-    BuildContext context,
-    WallpaperDetailViewModel viewModel,
-    String imageUrl,
-  ) {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              ListTile(
-                leading: const Icon(Icons.home),
-                title: Text(AppStrings.setAsHomeScreen),
-                onTap: () {
-                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.homeScreen);
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.lock),
-                title: Text(AppStrings.setAsLockScreen),
-                onTap: () {
-                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.lockScreen);
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.phone_android),
-                title: Text(AppStrings.setAsBoth),
-                onTap: () {
-                  viewModel.setWallpaper(imageUrl, WallpaperManagerFlutter.bothScreens);
-                  Navigator.pop(context);
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-    bool isDownloading = false,
-  }) {
-    return Material(
-      color: AppColors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: .circular(30.r),
-        child: Container(
-          height: 50,
-          width: 120,
-          // padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
-          decoration: BoxDecoration(
-            borderRadius: .circular(30.r),
-            border: Border.all(color: color, width: 2.w),
-          ),
-          child: isDownloading
-              ? const Center(
-                  child: CustomProgressIndicator.CustomProgressIndicator(color: AppColors.white),
-                )
-              : Row(
-                  mainAxisAlignment: .center,
-                  spacing: 3.w,
-                  children: <Widget>[
-                    Icon(icon, color: color),
-                    Text(label, style: TextStyle(color: color)),
-                  ],
-                ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow({required IconData icon, required String text, required Color color}) {
-    return Row(
-      spacing: 3.w,
-      children: <Widget>[
-        Icon(icon, color: color),
-        Text(text, style: TextStyle(color: color)),
-      ],
     );
   }
 }

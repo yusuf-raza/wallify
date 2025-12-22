@@ -21,9 +21,7 @@ Future<void> main() async {
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<FavouriteViewModel>(create: (_) => FavouriteViewModel()),
         ChangeNotifierProvider<HomeViewModel>(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider<WallpaperCategoryViewModel>(
-          create: (_) => WallpaperCategoryViewModel(),
-        ),
+        ChangeNotifierProvider<CategoryViewModel>(create: (_) => CategoryViewModel()),
         ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
         ChangeNotifierProvider<ThemeViewModel>(create: (_) => ThemeViewModel()),
       ],
@@ -46,7 +44,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _connectivitySubscription = ConnectivityService().connectivityStream.listen((List<ConnectivityResult> result) {
+    _connectivitySubscription = ConnectivityService().connectivityStream.listen((
+      List<ConnectivityResult> result,
+    ) {
       setState(() {
         _isOffline = result.contains(ConnectivityResult.none);
       });

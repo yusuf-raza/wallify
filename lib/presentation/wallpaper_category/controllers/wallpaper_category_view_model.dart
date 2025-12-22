@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
+import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 
 class CategoryFilter {
   const CategoryFilter({required this.label, required this.query});
@@ -14,14 +14,14 @@ class CategoryFilter {
   final String query;
 }
 
-class WallpaperCategoryViewModel extends BaseViewModel {
-  WallpaperCategoryViewModel({
+class CategoryViewModel extends BaseViewModel {
+  CategoryViewModel({
     WallpaperApi? wallpaperApi,
     LoggerService? loggerService,
     super.connectivityService,
-  })  : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
-        _loggerService = loggerService ?? LoggerService.instance,
-        super();
+  }) : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
+       _loggerService = loggerService ?? LoggerService.instance,
+       super();
 
   final WallpaperApi _wallpaperApi;
   final LoggerService _loggerService;
@@ -72,8 +72,7 @@ class WallpaperCategoryViewModel extends BaseViewModel {
   void init(ScrollController controller) {
     _scrollController = controller;
     _scrollController?.addListener(() {
-      if (_scrollController!.position.pixels >=
-          _scrollController!.position.maxScrollExtent - 200) {
+      if (_scrollController!.position.pixels >= _scrollController!.position.maxScrollExtent - 200) {
         loadMore();
       }
     });

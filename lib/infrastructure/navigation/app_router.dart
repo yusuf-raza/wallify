@@ -41,8 +41,13 @@ class AppRouter {
       GoRoute(
         path: wallpaperDetailNew,
         builder: (BuildContext context, GoRouterState state) {
-          final WallhavenWallpaper wallpaper = state.extra! as WallhavenWallpaper;
-
+          final Object? extra = state.extra;
+          if (extra is Map<String, Object?>) {
+            final WallhavenWallpaper wallpaper = extra['wallpaper']! as WallhavenWallpaper;
+            final String? heroTag = extra['heroTag'] as String?;
+            return WallpaperDetailScreenNew(wallpaper: wallpaper, heroTag: heroTag);
+          }
+          final WallhavenWallpaper wallpaper = extra! as WallhavenWallpaper;
           return WallpaperDetailScreenNew(wallpaper: wallpaper);
         },
       ),

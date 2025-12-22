@@ -9,9 +9,10 @@ import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 
 class FullScreenImageScreen extends StatelessWidget {
-  const FullScreenImageScreen({super.key, required this.wallpaper});
+  const FullScreenImageScreen({super.key, required this.wallpaper, this.heroTag});
 
   final WallhavenWallpaper wallpaper;
+  final String? heroTag;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +42,7 @@ class FullScreenImageScreen extends StatelessWidget {
             },
             child: Center(
               child: Hero(
-                tag: wallpaper.path!,
+                tag: heroTag ?? wallpaper.path ?? wallpaper.id ?? 'wallpaper-hero',
                 child: InteractiveViewer(
                   panEnabled: true,
                   minScale: 0.5,

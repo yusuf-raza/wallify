@@ -9,6 +9,7 @@ import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
+import 'package:wallify/presentation/home/widgets/error_view.dart';
 
 /// A widget that displays the wallpapers in a responsive grid.
 class WallpaperGrid extends StatelessWidget {
@@ -38,7 +39,7 @@ class WallpaperGrid extends StatelessWidget {
 
         if (homeViewModel.errorMessage != null && homeViewModel.wallpapers.isEmpty) {
           return SliverFillRemaining(
-            child: _ErrorView(
+            child: ErrorView(
               message: homeViewModel.errorMessage!,
               onRetry: homeViewModel.fetchData,
             ),
@@ -47,7 +48,7 @@ class WallpaperGrid extends StatelessWidget {
 
         if (homeViewModel.wallpapers.isEmpty) {
           return SliverFillRemaining(
-            child: _ErrorView(
+            child: ErrorView(
               message: AppStrings.noWallpapersFound,
               onRetry: homeViewModel.fetchData,
             ),
@@ -64,14 +65,22 @@ class WallpaperGrid extends StatelessWidget {
             crossAxisSpacing: 5,
             delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
               final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
+              final String heroTag =
+                  'home-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
               // Each item in the grid.
               return Hero(
-                tag: wallpaper.path!,
+                tag: heroTag,
                 child: GridItem(
                   wallpaper: wallpaper,
                   onTap: () {
                     // Navigate to the wallpaper detail screen on tap.
-                    context.push(AppRouter.wallpaperDetailNew, extra: wallpaper);
+                    context.push(
+                      AppRouter.wallpaperDetailNew,
+                      extra: <String, Object?>{
+                        'wallpaper': wallpaper,
+                        'heroTag': heroTag,
+                      },
+                    );
                   },
                 ),
               );
@@ -79,25 +88,6 @@ class WallpaperGrid extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  const _ErrorView({required this.message, required this.onRetry});
-
-  final String message;
-  final Future<void> Function() onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text(message),
-        const SizedBox(height: 8),
-        ElevatedButton(onPressed: onRetry, child: const Text(AppStrings.tryAgain)),
-      ],
     );
   }
 }

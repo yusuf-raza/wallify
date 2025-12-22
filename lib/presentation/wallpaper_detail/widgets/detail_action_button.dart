@@ -3,21 +3,21 @@ import 'package:wallify/infrastructure/common/custom_circular_progress_indicator
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
-class BuildButton extends StatelessWidget {
-  const BuildButton({
+class DetailActionButton extends StatelessWidget {
+  const DetailActionButton({
     super.key,
     required this.icon,
     required this.label,
     required this.color,
     required this.onTap,
-    this.isDownloading = false,
+    this.isLoading = false,
   });
 
   final IconData icon;
   final String label;
   final Color color;
   final VoidCallback onTap;
-  final bool isDownloading;
+  final bool isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -25,21 +25,20 @@ class BuildButton extends StatelessWidget {
       color: AppColors.transparent,
       child: InkWell(
         onTap: onTap,
-        borderRadius: .circular(30.r),
+        borderRadius: BorderRadius.circular(30.r),
         child: Container(
           height: 50,
           width: 120,
-          // padding: EdgeInsets.symmetric(horizontal: 30.w, vertical: 10.h),
           decoration: BoxDecoration(
-            borderRadius: .circular(30.r),
+            borderRadius: BorderRadius.circular(30.r),
             border: Border.all(color: color, width: 2.w),
           ),
-          child: isDownloading
+          child: isLoading
               ? const Center(
                   child: CustomProgressIndicator.CustomProgressIndicator(color: AppColors.white),
                 )
               : Row(
-                  mainAxisAlignment: .center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   spacing: 3.w,
                   children: <Widget>[
                     Icon(icon, color: color),
