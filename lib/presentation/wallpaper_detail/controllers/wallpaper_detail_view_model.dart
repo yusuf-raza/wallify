@@ -7,6 +7,7 @@ import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
@@ -60,7 +61,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
       });
 
       Fluttertoast.showToast(
-        msg: 'Wallpaper set successfully!',
+        msg: AppStrings.wallpaperSetSuccessfully,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.green,
@@ -69,7 +70,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
     } catch (e) {
       _loggerService.logError('Failed to set wallpaper: $e');
       Fluttertoast.showToast(
-        msg: 'Failed to set wallpaper.',
+        msg: AppStrings.failedToSetWallpaper,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,
@@ -95,7 +96,9 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         );
 
         Fluttertoast.showToast(
-          msg: result == true ? 'Wallpaper saved successfully!' : 'Failed to save wallpaper.',
+          msg: result == true
+              ? AppStrings.wallpaperSavedSuccessfully
+              : AppStrings.failedToSaveWallpaper,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
           backgroundColor: result == true ? AppColors.green : AppColors.red,
@@ -103,7 +106,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
         );
       } else {
         Fluttertoast.showToast(
-          msg: 'Storage permission denied.',
+          msg: AppStrings.storagePermissionDenied,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           backgroundColor: AppColors.red,
@@ -113,7 +116,7 @@ class WallpaperDetailViewModel extends ChangeNotifier {
     } catch (e) {
       _loggerService.logError('failed to save $e');
       Fluttertoast.showToast(
-        msg: 'Failed to save wallpaper.',
+        msg: AppStrings.failedToSaveWallpaper,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,

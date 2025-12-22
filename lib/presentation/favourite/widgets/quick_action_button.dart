@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
+import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
 class QuickActionButton extends StatelessWidget {
@@ -29,7 +30,7 @@ class QuickActionButton extends StatelessWidget {
           : Icon(icon, color: AppColors.white, size: 18),
       label: Text(
         label,
-        style: TextStyle(color: AppColors.white, fontSize: 12.px),
+        style: AppTextStyles.bodySmall.copyWith(color: AppColors.white),
       ),
       style: TextButton.styleFrom(padding: EdgeInsets.symmetric(horizontal: 8.w)),
     );

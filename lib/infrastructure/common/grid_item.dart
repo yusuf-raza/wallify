@@ -16,41 +16,55 @@ class GridItem extends StatelessWidget {
     // Calculate the aspect ratio from the wallpaper's dimensions.
     // This helps the grid item maintain its shape even before the image loads.
     final double aspectRatio = (wallpaper.dimensionX ?? 1) / (wallpaper.dimensionY ?? 1);
-    final Color primaryColor = fromHex(wallpaper.colors![0]);
-    final Color secondaryColor = fromHex(wallpaper.colors![1]);
+    final List<String> colors = wallpaper.colors ?? <String>[];
+    final Color primaryColor = colors.isNotEmpty ? fromHex(colors.first) : AppColors.grey;
+    final Color secondaryColor = colors.length > 1 ? fromHex(colors[1]) : AppColors.black;
+    final String imageUrl = wallpaper.thumbs?.large ?? wallpaper.path ?? '';
+    final bool hasColors = colors.isNotEmpty;
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        decoration: BoxDecoration(borderRadius: .circular(20)),
-        child: AspectRatio(
-          aspectRatio: aspectRatio,
-          child: CachedNetworkImage(
-            imageUrl: wallpaper.thumbs?.large ?? '',
-            fit: BoxFit.cover,
-            progressIndicatorBuilder:
-                (BuildContext context, String url, DownloadProgress progress) => Shimmer.fromColors(
-                  baseColor: primaryColor,
-                  highlightColor: secondaryColor,
-                  child: AspectRatio(
-                    aspectRatio: aspectRatio,
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        color: AppColors.white,
-                        // borderRadius: .circular(20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          gradient: hasColors
+              ? null
+              : const LinearGradient(
+                  colors: <Color>[
+                    AppColors.orange,
+                    AppColors.pink,
+                    AppColors.purple,
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(20),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              progressIndicatorBuilder: (
+                BuildContext context,
+                String url,
+                DownloadProgress progress,
+              ) =>
+                  Shimmer.fromColors(
+                    baseColor: primaryColor,
+                    highlightColor: secondaryColor,
+                    child: AspectRatio(
+                      aspectRatio: aspectRatio,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: AppColors.white,
+                        ),
                       ),
                     ),
                   ),
-                ),
-
-            //  {
-            //   return Center(
-            //     child: CustomProgressIndicator.CustomProgressIndicator(
-            //       color: Color(int.parse('0xFF${wallpaper.colors![0].replaceFirst('#', '')}')),
-            //     ),
-            //   );
-            // },
-            errorWidget: (BuildContext context, String url, Object error) =>
-                const Center(child: Icon(Icons.error)),
+              errorWidget: (BuildContext context, String url, Object error) =>
+                  const Center(child: Icon(Icons.error)),
+            ),
           ),
         ),
       ),

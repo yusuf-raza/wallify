@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
+import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/wallpaper_category/controllers/wallpaper_category_view_model.dart';
 
@@ -34,11 +35,7 @@ class CategoryFilterBottomSheet extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     AppStrings.categories,
-                    style: TextStyle(
-                      fontSize: 18.w,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
+                    style: AppTextStyles.sheetTitle.copyWith(color: Colors.white),
                   ),
                   SizedBox(height: 12.h),
                   Wrap(
@@ -47,7 +44,10 @@ class CategoryFilterBottomSheet extends StatelessWidget {
                     children: viewModel.filters.map((CategoryFilter filter) {
                       final bool isSelected = filter == viewModel.selectedFilter;
                       return ChoiceChip(
-                        label: Text(filter.label, style: const TextStyle(color: Colors.white)),
+                        label: Text(
+                          filter.label,
+                          style: AppTextStyles.filterLabel.copyWith(color: Colors.white),
+                        ),
                         selected: isSelected,
                         selectedColor: Colors.white.withOpacity(0.2),
                         backgroundColor: Colors.white.withOpacity(0.1),

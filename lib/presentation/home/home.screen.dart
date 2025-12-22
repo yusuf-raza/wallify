@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SliverAppBar(
                       title: Text(
                         AppStrings.appTitle,
-                        style: TextStyle(fontSize: 100.px, fontWeight: FontWeight.bold),
+                        style: AppTextStyles.appTitle,
                       ),
                       actions: <Widget>[
                         // Theme toggle button.

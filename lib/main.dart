@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/infrastructure/navigation/app_router.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
@@ -82,9 +84,9 @@ class _MyAppState extends State<MyApp> {
         color: Colors.red,
         child: Container(
           padding: const EdgeInsets.all(8),
-          child: const Text(
-            'No Internet Connection',
-            style: TextStyle(color: Colors.white, fontSize: 12),
+          child: Text(
+            AppStrings.noInternetConnection,
+            style: AppTextStyles.banner.copyWith(color: Colors.white),
             textAlign: TextAlign.center,
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
 class DetailInfoRow extends StatelessWidget {
@@ -19,7 +20,7 @@ class DetailInfoRow extends StatelessWidget {
       spacing: 3.w,
       children: <Widget>[
         Icon(icon, color: color),
-        Text(text, style: TextStyle(color: color)),
+        Text(text, style: AppTextStyles.bodyMedium.copyWith(color: color)),
       ],
     );
   }

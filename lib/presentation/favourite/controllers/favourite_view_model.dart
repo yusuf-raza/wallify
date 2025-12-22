@@ -6,6 +6,7 @@ import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
+import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/constants/shared_prefs_keys.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
@@ -159,7 +160,7 @@ class FavouriteViewModel extends ChangeNotifier {
       final PermissionStatus status = await Permission.photos.request();
       if (!status.isGranted) {
         Fluttertoast.showToast(
-          msg: 'Storage permission denied.',
+          msg: AppStrings.storagePermissionDenied,
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.CENTER,
           backgroundColor: AppColors.red,
@@ -194,7 +195,7 @@ class FavouriteViewModel extends ChangeNotifier {
       }
 
       final String message =
-          successCount == 0 ? 'No wallpapers saved.' : 'Saved $successCount wallpapers.';
+          successCount == 0 ? AppStrings.noWallpapersSaved : AppStrings.savedWallpapers(successCount);
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,
@@ -205,7 +206,7 @@ class FavouriteViewModel extends ChangeNotifier {
     } catch (e) {
       _loggerService.logError('failed to save $e');
       Fluttertoast.showToast(
-        msg: 'Failed to save wallpaper.',
+        msg: AppStrings.failedToSaveWallpaper,
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,

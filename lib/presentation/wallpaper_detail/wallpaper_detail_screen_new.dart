@@ -76,17 +76,28 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                         },
                         child: Hero(
                           tag: heroTag ?? wallpaper.path ?? wallpaper.id ?? 'wallpaper-hero',
-                          child: CachedNetworkImage(
-                            height: 300.h,
-                            width: 300.w,
-                            imageUrl: wallpaper.thumbs!.large!,
-                            fit: BoxFit.cover,
-                            placeholder: (BuildContext context, String url) => Shimmer.fromColors(
-                              baseColor: secondaryColor,
-                              highlightColor: primaryColor,
-                              child: Container(
-                                height: 300.h,
-                                decoration: const BoxDecoration(color: AppColors.white),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20.r),
+                            clipBehavior: Clip.antiAlias,
+                            child: CachedNetworkImage(
+                              height: 300.h,
+                              width: 300.w,
+                              imageUrl: wallpaper.thumbs!.large!,
+                              fit: BoxFit.cover,
+                              placeholder: (BuildContext context, String url) => ClipRRect(
+                                borderRadius: BorderRadius.circular(20.r),
+                                clipBehavior: Clip.antiAlias,
+                                child: Shimmer.fromColors(
+                                  baseColor: secondaryColor,
+                                  highlightColor: primaryColor,
+                                  child: Container(
+                                    height: 300.h,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.white,
+                                      borderRadius: BorderRadius.circular(20.r),
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
