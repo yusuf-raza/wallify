@@ -81,8 +81,8 @@ class AppStrings {
   static const String filterHistoryQuery = 'history';
   static const String filterHotLabel = 'Hot';
   static const String filterHotQuery = 'hot';
-  static const String filterInspirationLabel = 'Inspiration';
-  static const String filterInspirationQuery = 'inspiration quotes';
+  static const String filterInspirationLabel = 'Retro';
+  static const String filterInspirationQuery = 'retro';
   static const String filterMountainsLabel = 'Mountains';
   static const String filterMountainsQuery = 'mountains';
   static const String filterMusicLabel = 'Music';
