@@ -4,12 +4,10 @@ import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/presentation/base/base.screen.dart';
 import 'package:wallify/presentation/favourite/favourite.screen.dart';
 import 'package:wallify/presentation/home/home.screen.dart';
-import 'package:wallify/presentation/splash/splash.screen.dart';
 import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
 import 'package:wallify/presentation/wallpaper_detail/wallpaper_detail_screen_new.dart';
 
 class AppRouter {
-  static const String splash = '/';
   static const String base = '/base';
   static const String home = '/home';
   static const String favourite = '/favourite';
@@ -20,12 +18,8 @@ class AppRouter {
   static const String counter = '/counter';
 
   static final GoRouter router = GoRouter(
-    initialLocation: splash,
+    initialLocation: base,
     routes: <GoRoute>[
-      GoRoute(
-        path: splash,
-        builder: (BuildContext context, GoRouterState state) => const SplashScreen(),
-      ),
       GoRoute(
         path: base,
         builder: (BuildContext context, GoRouterState state) => const BaseScreen(),

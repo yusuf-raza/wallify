@@ -10,7 +10,6 @@ import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
-import 'package:wallify/presentation/splash/controllers/splash_view_model.dart';
 import 'package:wallify/presentation/wallpaper_category/controllers/wallpaper_category_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 
@@ -22,7 +21,6 @@ Future<void> main() async {
       providers: <SingleChildWidget>[
         ChangeNotifierProvider<FavouriteViewModel>(create: (_) => FavouriteViewModel()),
         ChangeNotifierProvider<HomeViewModel>(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider<SplashViewModel>(create: (_) => SplashViewModel()),
         ChangeNotifierProvider<WallpaperCategoryViewModel>(
           create: (_) => WallpaperCategoryViewModel(),
         ),

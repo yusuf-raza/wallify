@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:gallery_saver_plus/gallery_saver.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
@@ -31,6 +31,7 @@ Future<void> _setWallpaperIsolate(Map<String, dynamic> args) async {
 
 class WallpaperDetailViewModel extends ChangeNotifier {
   final LoggerService _loggerService;
+  static const String _albumName = 'wallify';
 
   WallpaperDetailViewModel({LoggerService? loggerService})
     : _loggerService = loggerService ?? LoggerService.instance;
@@ -87,15 +88,17 @@ class WallpaperDetailViewModel extends ChangeNotifier {
     try {
       final PermissionStatus status = await Permission.photos.request();
       if (status.isGranted) {
-        final http.Response response = await http.get(Uri.parse(imageUrl));
-        final Uint8List bytes = response.bodyBytes;
-        await ImageGallerySaverPlus.saveImage(bytes);
+        final bool? result = await GallerySaver.saveImage(
+          imageUrl,
+          albumName: _albumName,
+          toDcim: false,
+        );
 
         Fluttertoast.showToast(
-          msg: 'Wallpaper saved successfully!',
+          msg: result == true ? 'Wallpaper saved successfully!' : 'Failed to save wallpaper.',
           toastLength: Toast.LENGTH_SHORT,
           gravity: ToastGravity.BOTTOM,
-          backgroundColor: AppColors.green,
+          backgroundColor: result == true ? AppColors.green : AppColors.red,
           textColor: AppColors.white,
         );
       } else {
