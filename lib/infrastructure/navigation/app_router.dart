@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/presentation/base/base_screen.dart';
 import 'package:wallify/presentation/category/category_screen.dart';
 import 'package:wallify/presentation/favourite/favourite_screen.dart';
+import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
+import 'package:wallify/presentation/full_screen/controllers/full_screen_view_model.dart';
+import 'package:wallify/presentation/full_screen/full_screen_screen.dart';
 import 'package:wallify/presentation/home/home_screen.dart';
 import 'package:wallify/presentation/wallpaper_detail/detail_screen.dart';
+import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 
 class AppRouter {
   static const String base = '/base';
@@ -14,6 +19,7 @@ class AppRouter {
   static const String wallpaperDetail = '/wallpaper-detail';
   static const String wallpaperCategory = '/wallpaper-category';
   static const String wallpaperDetailNew = '/wallpaper-detail-screen-new';
+  static const String fullScreen = '/full-screen';
 
   static const String counter = '/counter';
 
@@ -49,6 +55,26 @@ class AppRouter {
           }
           final WallhavenWallpaper wallpaper = extra! as WallhavenWallpaper;
           return DetailScreen(wallpaper: wallpaper);
+        },
+      ),
+      GoRoute(
+        path: fullScreen,
+        builder: (BuildContext context, GoRouterState state) {
+          final Object? extra = state.extra;
+          if (extra is! Map<String, Object?>) {
+            return const BaseScreen();
+          }
+          final WallhavenWallpaper wallpaper = extra['wallpaper']! as WallhavenWallpaper;
+          final String? heroTag = extra['heroTag'] as String?;
+          return ChangeNotifierProvider<FullScreenVM>(
+            create: (_) => FullScreenVM(
+              wallpaper: wallpaper,
+              heroTag: heroTag,
+              detailViewModel: Provider.of<WallpaperDetailVM>(context, listen: false),
+              favouriteViewModel: Provider.of<FavouriteVM>(context, listen: false),
+            ),
+            child: const FullScreenImageScreen(),
+          );
         },
       ),
     ],

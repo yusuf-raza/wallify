@@ -6,13 +6,13 @@ import 'package:provider/provider.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/color_util.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
-import 'package:wallify/presentation/wallpaper_detail/full_screen_image_widget.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/detail_action_button.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/detail_info_row.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/set_wallpaper_bottom_sheet.dart';
@@ -54,12 +54,9 @@ class DetailScreen extends StatelessWidget {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder: (BuildContext context) =>
-                                  FullScreenImageScreen(wallpaper: wallpaper, heroTag: heroTag),
-                            ),
+                          context.push(
+                            AppRouter.fullScreen,
+                            extra: <String, Object?>{'wallpaper': wallpaper, 'heroTag': heroTag},
                           );
                         },
                         child: Hero(
