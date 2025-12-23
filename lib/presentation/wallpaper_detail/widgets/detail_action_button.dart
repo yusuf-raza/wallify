@@ -43,7 +43,7 @@ class DetailActionButton extends StatelessWidget {
                   spacing: 3.w,
                   children: <Widget>[
                     Icon(icon, color: color),
-                    Text(label, style: AppTextStyles.button.copyWith(color: color)),
+                    Text(label, style: AppTextStyles.button.copyWith(color: color, fontSize: 15)),
                   ],
                 ),
         ),

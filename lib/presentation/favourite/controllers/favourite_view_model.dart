@@ -11,8 +11,8 @@ import 'package:wallify/infrastructure/constants/shared_prefs_keys.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 
-class FavouriteViewModel extends ChangeNotifier {
-  static const String _albumName = 'wallify';
+class FavouriteVM extends ChangeNotifier {
+  static const String _albumName = 'Wallify';
   List<WallhavenWallpaper> _favouriteWallpapers = <WallhavenWallpaper>[];
   bool _isLoading = false;
   bool _isDownloading = false;
@@ -24,8 +24,8 @@ class FavouriteViewModel extends ChangeNotifier {
   final Set<String> _selectedIds = <String>{};
   final LoggerService _loggerService;
 
-  FavouriteViewModel({LoggerService? loggerService})
-      : _loggerService = loggerService ?? LoggerService.instance {
+  FavouriteVM({LoggerService? loggerService})
+    : _loggerService = loggerService ?? LoggerService.instance {
     _loadFavouritesOnInit();
   }
 
@@ -194,8 +194,9 @@ class FavouriteViewModel extends ChangeNotifier {
         }
       }
 
-      final String message =
-          successCount == 0 ? AppStrings.noWallpapersSaved : AppStrings.savedWallpapers(successCount);
+      final String message = successCount == 0
+          ? AppStrings.noWallpapersSaved
+          : AppStrings.savedWallpapers(successCount);
       Fluttertoast.showToast(
         msg: message,
         toastLength: Toast.LENGTH_SHORT,

@@ -3,12 +3,7 @@ import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 
 class DetailInfoRow extends StatelessWidget {
-  const DetailInfoRow({
-    super.key,
-    required this.icon,
-    required this.text,
-    required this.color,
-  });
+  const DetailInfoRow({super.key, required this.icon, required this.text, required this.color});
 
   final IconData icon;
   final String text;
@@ -20,7 +15,7 @@ class DetailInfoRow extends StatelessWidget {
       spacing: 3.w,
       children: <Widget>[
         Icon(icon, color: color),
-        Text(text, style: AppTextStyles.bodyMedium.copyWith(color: color)),
+        Text(text, style: AppTextStyles.bodyMedium.copyWith(color: color, fontSize: 15)),
       ],
     );
   }

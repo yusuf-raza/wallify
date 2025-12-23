@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
-import 'package:wallify/presentation/base/base.screen.dart';
-import 'package:wallify/presentation/favourite/favourite.screen.dart';
-import 'package:wallify/presentation/home/home.screen.dart';
-import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
-import 'package:wallify/presentation/wallpaper_detail/wallpaper_detail_screen_new.dart';
+import 'package:wallify/presentation/base/base_screen.dart';
+import 'package:wallify/presentation/category/category_screen.dart';
+import 'package:wallify/presentation/favourite/favourite_screen.dart';
+import 'package:wallify/presentation/home/home_screen.dart';
+import 'package:wallify/presentation/wallpaper_detail/detail_screen.dart';
 
 class AppRouter {
   static const String base = '/base';
@@ -35,7 +35,7 @@ class AppRouter {
 
       GoRoute(
         path: wallpaperCategory,
-        builder: (BuildContext context, GoRouterState state) => const WallpaperCategoryScreen(),
+        builder: (BuildContext context, GoRouterState state) => const CategoryScreen(),
       ),
 
       GoRoute(
@@ -45,10 +45,10 @@ class AppRouter {
           if (extra is Map<String, Object?>) {
             final WallhavenWallpaper wallpaper = extra['wallpaper']! as WallhavenWallpaper;
             final String? heroTag = extra['heroTag'] as String?;
-            return WallpaperDetailScreenNew(wallpaper: wallpaper, heroTag: heroTag);
+            return DetailScreen(wallpaper: wallpaper, heroTag: heroTag);
           }
           final WallhavenWallpaper wallpaper = extra! as WallhavenWallpaper;
-          return WallpaperDetailScreenNew(wallpaper: wallpaper);
+          return DetailScreen(wallpaper: wallpaper);
         },
       ),
     ],

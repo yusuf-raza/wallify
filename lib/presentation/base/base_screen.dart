@@ -10,8 +10,8 @@ class BaseScreen extends StatelessWidget {
   const BaseScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeViewModel>(
-      builder: (BuildContext context, HomeViewModel controller, Widget? child) {
+    return Consumer<HomeVM>(
+      builder: (BuildContext context, HomeVM controller, Widget? child) {
         return Scaffold(
           body: EasyAnimatedIndexedStack(
             index: controller.currentIndex,
@@ -20,7 +20,7 @@ class BaseScreen extends StatelessWidget {
           bottomNavigationBar: LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) {
               final double bottomPadding = MediaQuery.of(context).padding.bottom;
-              const double barHeight = 72;
+              const double barHeight = 55;
               final double totalHeight = barHeight + bottomPadding;
 
               return AnimatedContainer(

@@ -7,16 +7,13 @@ import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/presentation/base/controllers/base_view_model.dart';
 
-class HomeViewModel extends BaseViewModel {
+class HomeVM extends BaseVM {
   final LoggerService _loggerService;
   final WallpaperApi _wallpaperApi;
 
-  HomeViewModel({
-    LoggerService? loggerService,
-    super.connectivityService,
-    WallpaperApi? wallpaperApi,
-  }) : _loggerService = loggerService ?? LoggerService.instance,
-       _wallpaperApi = wallpaperApi ?? WallpaperApi() {
+  HomeVM({LoggerService? loggerService, super.connectivityService, WallpaperApi? wallpaperApi})
+    : _loggerService = loggerService ?? LoggerService.instance,
+      _wallpaperApi = wallpaperApi ?? WallpaperApi() {
     fetchData();
   }
 
@@ -63,7 +60,7 @@ class HomeViewModel extends BaseViewModel {
         page: _currentPage,
       );
       wallpapers.addAll(newWallpapers);
-      _loggerService.logInfo('wallpapers length   ${wallpapers.length}');
+      _loggerService.logInfo('${wallpapers.length} wallpapers fetched');
     } catch (e) {
       _loggerService.logError('error in getWallpapers() $e');
       errorMessage = AppStrings.failedToLoadWallpapers;
@@ -86,7 +83,7 @@ class HomeViewModel extends BaseViewModel {
         page: _currentPage,
       );
       wallpapers.addAll(newWallpapers);
-      _loggerService.logInfo('wallpapers length   ${wallpapers.length}');
+      _loggerService.logInfo('${wallpapers.length} more wallpapers loaded');
     } catch (e) {
       _currentPage--; // revert page number on error
       _loggerService.logError('error in loadMoreWallpapers() $e');

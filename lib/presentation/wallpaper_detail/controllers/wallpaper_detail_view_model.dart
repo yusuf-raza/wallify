@@ -30,11 +30,11 @@ Future<void> _setWallpaperIsolate(Map<String, dynamic> args) async {
   await wallpaperManager.setWallpaper(file, location);
 }
 
-class WallpaperDetailViewModel extends ChangeNotifier {
+class WallpaperDetailVM extends ChangeNotifier {
   final LoggerService _loggerService;
   static const String _albumName = 'wallify';
 
-  WallpaperDetailViewModel({LoggerService? loggerService})
+  WallpaperDetailVM({LoggerService? loggerService})
     : _loggerService = loggerService ?? LoggerService.instance;
 
   bool isDownloading = false;

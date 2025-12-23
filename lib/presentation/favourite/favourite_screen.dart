@@ -23,20 +23,17 @@ class FavouriteScreen extends StatelessWidget {
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(66.h),
-        child: Consumer2<ThemeViewModel, FavouriteViewModel>(
+        child: Consumer2<ThemeViewModel, FavouriteVM>(
           builder:
               (
                 BuildContext context,
                 ThemeViewModel themeController,
-                FavouriteViewModel favouriteViewModel,
+                FavouriteVM favouriteViewModel,
                 Widget? child,
               ) {
                 return AppBar(
                   centerTitle: true,
-                  title: Text(
-                    AppStrings.favourite,
-                    style: AppTextStyles.screenTitle,
-                  ),
+                  title: Text(AppStrings.favourite, style: AppTextStyles.screenTitle),
                   actions: <Widget>[
                     IconButton(
                       icon: const Icon(Icons.dark_mode, size: 25),
@@ -51,8 +48,8 @@ class FavouriteScreen extends StatelessWidget {
               },
         ),
       ),
-      body: Consumer<FavouriteViewModel>(
-        builder: (BuildContext context, FavouriteViewModel favouriteViewModel, Widget? child) {
+      body: Consumer<FavouriteVM>(
+        builder: (BuildContext context, FavouriteVM favouriteViewModel, Widget? child) {
           if (favouriteViewModel.isLoading) {
             return const Center(child: CustomProgressIndicator.CustomProgressIndicator());
           }
@@ -65,14 +62,10 @@ class FavouriteScreen extends StatelessWidget {
                   children: <Widget>[
                     Icon(Icons.favorite_border, size: 90.px, color: AppColors.grey),
                     SizedBox(height: 12.h),
-                    Text(
-                      AppStrings.noFavouriteWallpapers,
-                      style: AppTextStyles.emptyStateTitle,
-                    ),
+                    Text(AppStrings.noFavouriteWallpapers, style: AppTextStyles.emptyStateTitle),
                     SizedBox(height: 12.h),
                     ElevatedButton(
-                      onPressed: () =>
-                          Provider.of<HomeViewModel>(context, listen: false).changeIndex(0),
+                      onPressed: () => Provider.of<HomeVM>(context, listen: false).changeIndex(0),
                       child: Text(
                         AppStrings.browseWallpapers,
                         style: AppTextStyles.emptyStateTitle,
@@ -259,18 +252,18 @@ class FavouriteScreen extends StatelessWidget {
                                           child: Column(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
-                                            Text(
-                                              title,
-                                              style: AppTextStyles.cardTitle.copyWith(
-                                                color: AppColors.white,
+                                              Text(
+                                                title,
+                                                style: AppTextStyles.cardTitle.copyWith(
+                                                  color: AppColors.white,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              subtitle,
-                                              style: AppTextStyles.cardSubtitle.copyWith(
-                                                color: AppColors.white,
+                                              Text(
+                                                subtitle,
+                                                style: AppTextStyles.cardSubtitle.copyWith(
+                                                  color: AppColors.white,
+                                                ),
                                               ),
-                                            ),
                                             ],
                                           ),
                                         ),
@@ -302,11 +295,11 @@ class FavouriteScreen extends StatelessWidget {
                                           ),
                                         ),
                                         QuickActionButton(
-                                        icon: Icons.download,
-                                        label: favouriteViewModel.isDownloading
-                                            ? AppStrings.downloadingEllipsis
-                                            : AppStrings.download,
-                                        isBusy: favouriteViewModel.isDownloading,
+                                          icon: Icons.download,
+                                          label: favouriteViewModel.isDownloading
+                                              ? AppStrings.downloadingEllipsis
+                                              : AppStrings.download,
+                                          isBusy: favouriteViewModel.isDownloading,
                                           onPressed: favouriteViewModel.isDownloading
                                               ? null
                                               : () => favouriteViewModel.downloadSingleWallpaper(
@@ -369,10 +362,10 @@ class FavouriteScreen extends StatelessWidget {
                         );
                       })
                     else
-                    Text(
-                      '${favouriteViewModel.currentIndex + 1} / $total',
-                      style: AppTextStyles.bodyMedium,
-                    ),
+                      Text(
+                        '${favouriteViewModel.currentIndex + 1} / $total',
+                        style: AppTextStyles.bodyMedium,
+                      ),
                     SizedBox(width: 12.w),
                     IconButton(
                       onPressed: () {

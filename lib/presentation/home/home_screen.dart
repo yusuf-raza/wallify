@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
@@ -7,7 +8,6 @@ import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 import 'package:wallify/presentation/home/widgets/wallpaper_grid.dart';
-import 'package:flutter/rendering.dart';
 
 /// The main screen of the application, displaying a list of wallpapers.
 class HomeScreen extends StatefulWidget {
@@ -20,12 +20,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   // Controller for the scroll view to detect when the user reaches the bottom.
   final ScrollController _scrollController = ScrollController();
-  late final HomeViewModel _homeViewModel;
+  late final HomeVM _homeViewModel;
 
   @override
   void initState() {
     super.initState();
-    _homeViewModel = Provider.of<HomeViewModel>(context, listen: false);
+    _homeViewModel = Provider.of<HomeVM>(context, listen: false);
     _homeViewModel.init(_scrollController);
   }
 
@@ -44,8 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget>[
             NotificationListener<UserScrollNotification>(
               onNotification: (UserScrollNotification notification) {
-                final HomeViewModel controller =
-                    Provider.of<HomeViewModel>(context, listen: false);
+                final HomeVM controller = Provider.of<HomeVM>(context, listen: false);
                 if (notification.direction == ScrollDirection.reverse) {
                   controller.setBottomBarVisible(false);
                 } else if (notification.direction == ScrollDirection.forward) {
@@ -55,15 +54,12 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               child: RefreshIndicator(
                 // Allows pull-to-refresh to fetch new wallpapers.
-                onRefresh: () => Provider.of<HomeViewModel>(context, listen: false).fetchData(),
+                onRefresh: () => Provider.of<HomeVM>(context, listen: false).fetchData(),
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: <Widget>[
                     SliverAppBar(
-                      title: Text(
-                        AppStrings.appTitle,
-                        style: AppTextStyles.appTitle,
-                      ),
+                      title: Text(AppStrings.appTitle, style: AppTextStyles.appTitle),
                       actions: <Widget>[
                         // Theme toggle button.
                         Consumer<ThemeViewModel>(
@@ -85,8 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             // Positioned loading indicator at the bottom
-            Consumer<HomeViewModel>(
-              builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
+            Consumer<HomeVM>(
+              builder: (BuildContext context, HomeVM homeViewModel, Widget? child) {
                 if (homeViewModel.loadingMoreWallpapers) {
                   return Positioned(
                     bottom: 0, // Position it at the bottom

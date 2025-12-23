@@ -28,8 +28,8 @@ class WallpaperGrid extends StatelessWidget {
       crossAxisCount = 4;
     }
     // Use a Consumer to listen for changes in the HomeViewModel.
-    return Consumer<HomeViewModel>(
-      builder: (BuildContext context, HomeViewModel homeViewModel, Widget? child) {
+    return Consumer<HomeVM>(
+      builder: (BuildContext context, HomeVM homeViewModel, Widget? child) {
         // Show a loading indicator while fetching initial wallpapers.
         if (homeViewModel.gettingWallpapers) {
           return const SliverFillRemaining(
@@ -65,8 +65,7 @@ class WallpaperGrid extends StatelessWidget {
             crossAxisSpacing: 5,
             delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
               final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
-              final String heroTag =
-                  'home-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
+              final String heroTag = 'home-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
               // Each item in the grid.
               return Hero(
                 tag: heroTag,
@@ -76,10 +75,7 @@ class WallpaperGrid extends StatelessWidget {
                     // Navigate to the wallpaper detail screen on tap.
                     context.push(
                       AppRouter.wallpaperDetailNew,
-                      extra: <String, Object?>{
-                        'wallpaper': wallpaper,
-                        'heroTag': heroTag,
-                      },
+                      extra: <String, Object?>{'wallpaper': wallpaper, 'heroTag': heroTag},
                     );
                   },
                 ),

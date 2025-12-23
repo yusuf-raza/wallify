@@ -3,17 +3,17 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:wallify/infrastructure/utils/connectivity_service.dart';
-import 'package:wallify/presentation/favourite/favourite.screen.dart';
-import 'package:wallify/presentation/home/home.screen.dart';
-import 'package:wallify/presentation/wallpaper_category/wallpaper_category.screen.dart';
+import 'package:wallify/presentation/category/category_screen.dart';
+import 'package:wallify/presentation/favourite/favourite_screen.dart';
+import 'package:wallify/presentation/home/home_screen.dart';
 
-abstract class BaseViewModel extends ChangeNotifier {
+abstract class BaseVM extends ChangeNotifier {
   final StreamController<int> _doubleTapController = StreamController<int>.broadcast();
   final ConnectivityService _connectivityService;
   late StreamSubscription<List<ConnectivityResult>> _connectivitySubscription;
   bool _isOnline = true;
 
-  BaseViewModel({ConnectivityService? connectivityService})
+  BaseVM({ConnectivityService? connectivityService})
     : _connectivityService = connectivityService ?? ConnectivityService() {
     _connectivitySubscription = _connectivityService.connectivityStream.listen(
       onConnectivityChanged,
@@ -27,7 +27,7 @@ abstract class BaseViewModel extends ChangeNotifier {
 
   List<Widget> screens = <Widget>[
     const HomeScreen(),
-    const WallpaperCategoryScreen(),
+    const CategoryScreen(),
     const FavouriteScreen(),
   ];
 

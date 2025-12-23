@@ -12,18 +12,13 @@ import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
-import 'package:wallify/presentation/wallpaper_detail/full_screen_image.screen.dart';
+import 'package:wallify/presentation/wallpaper_detail/full_screen_image_widget.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/detail_action_button.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/detail_info_row.dart';
 import 'package:wallify/presentation/wallpaper_detail/widgets/set_wallpaper_bottom_sheet.dart';
 
-class WallpaperDetailScreenNew extends StatelessWidget {
-  const WallpaperDetailScreenNew({
-    super.key,
-    required this.wallpaper,
-    this.loggerService,
-    this.heroTag,
-  });
+class DetailScreen extends StatelessWidget {
+  const DetailScreen({super.key, required this.wallpaper, this.loggerService, this.heroTag});
 
   final WallhavenWallpaper wallpaper;
   final LoggerService? loggerService;
@@ -36,16 +31,11 @@ class WallpaperDetailScreenNew extends StatelessWidget {
 
     return MultiProvider(
       providers: <SingleChildWidget>[
-        ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
+        ChangeNotifierProvider<WallpaperDetailVM>(create: (_) => WallpaperDetailVM()),
       ],
-      child: Consumer2<WallpaperDetailViewModel, FavouriteViewModel>(
+      child: Consumer2<WallpaperDetailVM, FavouriteVM>(
         builder:
-            (
-              BuildContext context,
-              WallpaperDetailViewModel viewModel,
-              FavouriteViewModel favouriteViewModel,
-              _,
-            ) {
+            (BuildContext context, WallpaperDetailVM viewModel, FavouriteVM favouriteViewModel, _) {
               return Scaffold(
                 appBar: AppBar(
                   leading: IconButton.filled(
@@ -53,7 +43,7 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                     style: IconButton.styleFrom(backgroundColor: primaryColor),
 
                     onPressed: () => context.pop(),
-                    icon: const Icon(Icons.keyboard_backspace, color: AppColors.white),
+                    icon: Icon(Icons.keyboard_backspace, color: secondaryColor),
                   ),
                   backgroundColor: secondaryColor,
                 ),
@@ -67,10 +57,8 @@ class WallpaperDetailScreenNew extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (BuildContext context) => FullScreenImageScreen(
-                                wallpaper: wallpaper,
-                                heroTag: heroTag,
-                              ),
+                              builder: (BuildContext context) =>
+                                  FullScreenImageScreen(wallpaper: wallpaper, heroTag: heroTag),
                             ),
                           );
                         },

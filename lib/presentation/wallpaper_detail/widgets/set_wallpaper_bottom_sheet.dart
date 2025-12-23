@@ -7,7 +7,7 @@ import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
 void showSetWallpaperBottomSheet(
   BuildContext context,
-  WallpaperDetailViewModel viewModel,
+  WallpaperDetailVM viewModel,
   String imageUrl,
 ) {
   showModalBottomSheet<void>(

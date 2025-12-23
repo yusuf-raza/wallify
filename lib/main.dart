@@ -4,15 +4,15 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:nested/nested.dart';
 import 'package:provider/provider.dart';
-import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
+import 'package:wallify/infrastructure/navigation/app_router.dart';
 import 'package:wallify/infrastructure/theme/app_text_styles.dart';
 import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/connectivity_service.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
+import 'package:wallify/presentation/category/controllers/category_view_model.dart';
 import 'package:wallify/presentation/favourite/controllers/favourite_view_model.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
-import 'package:wallify/presentation/wallpaper_category/controllers/wallpaper_category_view_model.dart';
 import 'package:wallify/presentation/wallpaper_detail/controllers/wallpaper_detail_view_model.dart';
 
 Future<void> main() async {
@@ -21,10 +21,10 @@ Future<void> main() async {
   runApp(
     MultiProvider(
       providers: <SingleChildWidget>[
-        ChangeNotifierProvider<FavouriteViewModel>(create: (_) => FavouriteViewModel()),
-        ChangeNotifierProvider<HomeViewModel>(create: (_) => HomeViewModel()),
-        ChangeNotifierProvider<CategoryViewModel>(create: (_) => CategoryViewModel()),
-        ChangeNotifierProvider<WallpaperDetailViewModel>(create: (_) => WallpaperDetailViewModel()),
+        ChangeNotifierProvider<FavouriteVM>(create: (_) => FavouriteVM()),
+        ChangeNotifierProvider<HomeVM>(create: (_) => HomeVM()),
+        ChangeNotifierProvider<CategoryVM>(create: (_) => CategoryVM()),
+        ChangeNotifierProvider<WallpaperDetailVM>(create: (_) => WallpaperDetailVM()),
         ChangeNotifierProvider<ThemeViewModel>(create: (_) => ThemeViewModel()),
       ],
       child: const MyApp(),

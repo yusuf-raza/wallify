@@ -1,11 +1,14 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:wallify/data/api/wallpaper_api/wallpaper_api.dart';
 import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallify/presentation/base/controllers/base_view_model.dart';
+import 'package:wallify/presentation/category/widgets/category_filter_bottom_sheet.dart';
+import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
 class CategoryFilter {
   const CategoryFilter({required this.label, required this.query});
@@ -14,18 +17,15 @@ class CategoryFilter {
   final String query;
 }
 
-class CategoryViewModel extends BaseViewModel {
-  CategoryViewModel({
-    WallpaperApi? wallpaperApi,
-    LoggerService? loggerService,
-    super.connectivityService,
-  }) : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
-       _loggerService = loggerService ?? LoggerService.instance,
-       super();
+// Extends BaseVM to reuse connectivity-aware refresh and shared navigation wiring.
+class CategoryVM extends BaseVM {
+  CategoryVM({WallpaperApi? wallpaperApi, LoggerService? loggerService, super.connectivityService})
+    : _wallpaperApi = wallpaperApi ?? WallpaperApi(),
+      _loggerService = loggerService ?? LoggerService.instance,
+      super();
 
   final WallpaperApi _wallpaperApi;
   final LoggerService _loggerService;
-
   final List<CategoryFilter> filters = const <CategoryFilter>[
     CategoryFilter(label: AppStrings.filterAllLabel, query: AppStrings.filterAllQuery),
     CategoryFilter(label: AppStrings.filterAbstractLabel, query: AppStrings.filterAbstractQuery),
@@ -33,7 +33,10 @@ class CategoryViewModel extends BaseViewModel {
     CategoryFilter(label: AppStrings.filterAnimeLabel, query: AppStrings.filterAnimeQuery),
     CategoryFilter(label: AppStrings.filterArtLabel, query: AppStrings.filterArtQuery),
     CategoryFilter(label: AppStrings.filterBeachLabel, query: AppStrings.filterBeachQuery),
-    CategoryFilter(label: AppStrings.filterBlackWhiteLabel, query: AppStrings.filterBlackWhiteQuery),
+    CategoryFilter(
+      label: AppStrings.filterBlackWhiteLabel,
+      query: AppStrings.filterBlackWhiteQuery,
+    ),
     CategoryFilter(label: AppStrings.filterCitiesLabel, query: AppStrings.filterCitiesQuery),
     CategoryFilter(label: AppStrings.filterDarkLabel, query: AppStrings.filterDarkQuery),
     CategoryFilter(label: AppStrings.filterFantasyLabel, query: AppStrings.filterFantasyQuery),
@@ -55,7 +58,10 @@ class CategoryViewModel extends BaseViewModel {
     CategoryFilter(label: AppStrings.filterSportsLabel, query: AppStrings.filterSportsQuery),
     CategoryFilter(label: AppStrings.filterSunLabel, query: AppStrings.filterSunQuery),
     CategoryFilter(label: AppStrings.filterSunsetLabel, query: AppStrings.filterSunsetQuery),
-    CategoryFilter(label: AppStrings.filterTechnologyLabel, query: AppStrings.filterTechnologyQuery),
+    CategoryFilter(
+      label: AppStrings.filterTechnologyLabel,
+      query: AppStrings.filterTechnologyQuery,
+    ),
     CategoryFilter(label: AppStrings.filterTravelLabel, query: AppStrings.filterTravelQuery),
     CategoryFilter(label: AppStrings.filterVehiclesLabel, query: AppStrings.filterVehiclesQuery),
     CategoryFilter(label: AppStrings.filterVintageLabel, query: AppStrings.filterVintageQuery),
@@ -67,30 +73,67 @@ class CategoryViewModel extends BaseViewModel {
   );
   CategoryFilter get selectedFilter => _selectedFilter;
 
+  // UI state
   bool isLoading = false;
   bool isLoadingMore = false;
   String? errorMessage;
   int _currentPage = 1;
 
   List<WallhavenWallpaper> wallpapers = <WallhavenWallpaper>[];
-  ScrollController? _scrollController;
 
-  void init(ScrollController controller) {
-    _scrollController = controller;
-    _scrollController?.addListener(() {
-      if (_scrollController!.position.pixels >= _scrollController!.position.maxScrollExtent - 200) {
-        loadMore();
+  // Scroll and navigation wiring.
+  final ScrollController _scrollController = ScrollController();
+  ScrollController get scrollController => _scrollController;
+
+  StreamSubscription<int>? _navDoubleTapSubscription;
+  bool _hasInitialized = false;
+  bool _hasScrollListener = false;
+
+  // Initializes listeners and triggers the first load once the tab is visible.
+  void ensureInitialized(HomeVM homeNavViewModel) {
+    if (_hasInitialized || homeNavViewModel.currentIndex != 1) {
+      return;
+    }
+    _hasInitialized = true;
+    _bindHomeNavigation(homeNavViewModel);
+    _attachScrollListener();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (hasListeners) {
+        fetchData();
       }
     });
-    fetchData();
   }
 
+  // Toggles the bottom bar based on scroll direction.
+  bool handleScrollNotification(UserScrollNotification notification, HomeVM homeNavViewModel) {
+    if (notification.direction == ScrollDirection.reverse) {
+      homeNavViewModel.setBottomBarVisible(false);
+    } else if (notification.direction == ScrollDirection.forward) {
+      homeNavViewModel.setBottomBarVisible(true);
+    }
+    return false;
+  }
+
+  // Opens the category filter picker.
+  void showCategoryFilterBottomSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return CategoryFilterBottomSheet(viewModel: this);
+      },
+    );
+  }
+
+  // Applies a filter and reloads results.
   Future<void> selectCategory(CategoryFilter filter) async {
     if (_selectedFilter == filter) return;
     _selectedFilter = filter;
     await fetchData();
   }
 
+  // Fetches wallpapers for the selected category from page 1.
   @override
   Future<void> fetchData() async {
     isLoading = true;
@@ -118,6 +161,7 @@ class CategoryViewModel extends BaseViewModel {
     }
   }
 
+  // Loads the next page when near the end of the list.
   Future<void> loadMore() async {
     if (isLoadingMore || isLoading || errorMessage != null) return;
     isLoadingMore = true;
@@ -138,5 +182,37 @@ class CategoryViewModel extends BaseViewModel {
       isLoadingMore = false;
       notifyListeners();
     }
+  }
+
+  // Listens for bottom-nav double taps to scroll to top.
+  void _bindHomeNavigation(HomeVM homeNavViewModel) {
+    _navDoubleTapSubscription ??= homeNavViewModel.doubleTapStream.listen((int index) {
+      if (index == 1 && _scrollController.hasClients) {
+        _scrollController.animateTo(
+          0,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  // Adds the infinite scroll listener once.
+  void _attachScrollListener() {
+    if (_hasScrollListener) return;
+    _hasScrollListener = true;
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+        loadMore();
+      }
+    });
+  }
+
+  // Cleans up subscriptions and controllers.
+  @override
+  void dispose() {
+    _navDoubleTapSubscription?.cancel();
+    _scrollController.dispose();
+    super.dispose();
   }
 }
