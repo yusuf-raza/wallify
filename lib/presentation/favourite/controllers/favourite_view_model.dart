@@ -38,6 +38,27 @@ class FavouriteVM extends ChangeNotifier {
   int get currentIndex => _currentIndex;
   int get selectedCount => _selectedIds.length;
   List<WallhavenWallpaper> get favouriteWallpapers => _favouriteWallpapers;
+  int get totalWallpapers => _favouriteWallpapers.length;
+  bool get isMultiDownloadInProgress => _isDownloading && _downloadTotal > 1;
+  bool get canManageSelection => _selectedIds.isNotEmpty && !_isDownloading;
+  String get downloadProgressLabel =>
+      AppStrings.downloadProgress(_downloadCompleted, _downloadTotal);
+  String get downloadActionLabel =>
+      _isDownloading ? AppStrings.downloadingEllipsis : AppStrings.download;
+  String get removeSelectionLabel => AppStrings.removeCount(_selectedIds.length);
+  String get downloadSelectionLabel => _isDownloading
+      ? AppStrings.downloadingEllipsis
+      : AppStrings.downloadCount(_selectedIds.length);
+
+  WallhavenWallpaper? get currentWallpaper {
+    if (_favouriteWallpapers.isEmpty) {
+      return null;
+    }
+    final int safeIndex = _currentIndex.clamp(0, _favouriteWallpapers.length - 1);
+    return _favouriteWallpapers[safeIndex];
+  }
+
+  String get currentBackgroundUrl => currentWallpaper?.path ?? '';
 
   Future<void> _loadFavouritesOnInit() async {
     _isLoading = true;
