@@ -38,13 +38,14 @@ class FullScreenActionBar extends StatelessWidget {
                       isLoading: viewModel.isDownloading,
                       onTap: viewModel.saveWallpaper,
                     ),
-                    _ActionIcon(
-                      icon: Icons.image_outlined,
-                      label: AppStrings.set,
-                      color: primaryColor,
-                      isLoading: viewModel.isSettingWallpaper,
-                      onTap: () => viewModel.setWallpaper(context),
-                    ),
+                    if (viewModel.canSetWallpaper)
+                      _ActionIcon(
+                        icon: Icons.image_outlined,
+                        label: AppStrings.set,
+                        color: primaryColor,
+                        isLoading: viewModel.isSettingWallpaper,
+                        onTap: () => viewModel.setWallpaper(context),
+                      ),
                     _ActionIcon(
                       icon: viewModel.isFavourite ? Icons.favorite : Icons.favorite_border,
                       label: viewModel.isFavourite ? 'Liked' : 'Like',

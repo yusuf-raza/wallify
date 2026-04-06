@@ -27,8 +27,8 @@ class CategoryVM extends BaseVM {
   final WallpaperApi _wallpaperApi;
   final LoggerService _loggerService;
   final List<CategoryFilter> filters = const <CategoryFilter>[
-    CategoryFilter(label: AppStrings.filterAllLabel, query: AppStrings.filterAllQuery),
     CategoryFilter(label: AppStrings.filterAbstractLabel, query: AppStrings.filterAbstractQuery),
+    CategoryFilter(label: AppStrings.filterAllLabel, query: AppStrings.filterAllQuery),
     CategoryFilter(label: AppStrings.filterAnimalsLabel, query: AppStrings.filterAnimalsQuery),
     CategoryFilter(label: AppStrings.filterAnimeLabel, query: AppStrings.filterAnimeQuery),
     CategoryFilter(label: AppStrings.filterArtLabel, query: AppStrings.filterArtQuery),
@@ -44,7 +44,6 @@ class CategoryVM extends BaseVM {
     CategoryFilter(label: AppStrings.filterFitnessLabel, query: AppStrings.filterFitnessQuery),
     CategoryFilter(label: AppStrings.filterFoodLabel, query: AppStrings.filterFoodQuery),
     CategoryFilter(label: AppStrings.filterHistoryLabel, query: AppStrings.filterHistoryQuery),
-    CategoryFilter(label: AppStrings.filterHotLabel, query: AppStrings.filterHotQuery),
     CategoryFilter(
       label: AppStrings.filterInspirationLabel,
       query: AppStrings.filterInspirationQuery,
@@ -68,10 +67,15 @@ class CategoryVM extends BaseVM {
   ];
 
   CategoryFilter _selectedFilter = const CategoryFilter(
-    label: AppStrings.filterAllLabel,
-    query: AppStrings.filterAllQuery,
+    label: AppStrings.filterAbstractLabel,
+    query: AppStrings.filterAbstractQuery,
   );
   CategoryFilter get selectedFilter => _selectedFilter;
+  final TextEditingController searchController = TextEditingController();
+
+  String get customSearchQuery => searchController.text.trim();
+  bool get hasCustomSearch => customSearchQuery.isNotEmpty;
+  String get effectiveQuery => hasCustomSearch ? customSearchQuery : _selectedFilter.query;
 
   // UI state
   bool isLoading = false;
@@ -130,6 +134,27 @@ class CategoryVM extends BaseVM {
   Future<void> selectCategory(CategoryFilter filter) async {
     if (_selectedFilter == filter) return;
     _selectedFilter = filter;
+    if (hasCustomSearch) {
+      searchController.clear();
+    }
+    await fetchData();
+  }
+
+  Future<void> applySearch([String? value]) async {
+    final String resolvedQuery = (value ?? searchController.text).trim();
+    if (resolvedQuery == searchController.text.trim() && hasCustomSearch) {
+      await fetchData();
+      return;
+    }
+    searchController
+      ..text = resolvedQuery
+      ..selection = TextSelection.collapsed(offset: resolvedQuery.length);
+    await fetchData();
+  }
+
+  Future<void> clearSearch() async {
+    if (!hasCustomSearch) return;
+    searchController.clear();
     await fetchData();
   }
 
@@ -146,7 +171,7 @@ class CategoryVM extends BaseVM {
     try {
       final List<WallhavenWallpaper> newWallpapers = await _wallpaperApi.getWallpapers(
         page: _currentPage,
-        query: _selectedFilter.query,
+        query: effectiveQuery,
       );
       wallpapers = newWallpapers;
       if (wallpapers.isEmpty) {
@@ -171,7 +196,7 @@ class CategoryVM extends BaseVM {
       _currentPage++;
       final List<WallhavenWallpaper> moreWallpapers = await _wallpaperApi.getWallpapers(
         page: _currentPage,
-        query: _selectedFilter.query,
+        query: effectiveQuery,
       );
       wallpapers.addAll(moreWallpapers);
     } catch (e) {
@@ -212,6 +237,7 @@ class CategoryVM extends BaseVM {
   @override
   void dispose() {
     _navDoubleTapSubscription?.cancel();
+    searchController.dispose();
     _scrollController.dispose();
     super.dispose();
   }

@@ -19,13 +19,17 @@ class FavouriteEmptyState extends StatelessWidget {
           children: <Widget>[
             Icon(Icons.favorite_border, size: 90.px, color: AppColors.grey),
             SizedBox(height: 12.h),
-            Text(AppStrings.noFavouriteWallpapers, style: AppTextStyles.emptyStateTitle),
+            Text(
+              AppStrings.noFavouriteWallpapers,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.emptyStateTitle,
+            ),
             SizedBox(height: 12.h),
             ElevatedButton(
               onPressed: onBrowse,
               child: Text(
                 AppStrings.browseWallpapers,
-                style: AppTextStyles.emptyStateTitle,
+                style: AppTextStyles.button,
               ),
             ),
           ],

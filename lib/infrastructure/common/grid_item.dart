@@ -26,6 +26,13 @@ class GridItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
+          boxShadow: <BoxShadow>[
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
           gradient: hasColors
               ? null
               : const LinearGradient(

@@ -53,45 +53,60 @@ class _HomeScreenState extends State<HomeScreen> {
                 return false;
               },
               child: RefreshIndicator(
-                // Allows pull-to-refresh to fetch new wallpapers.
                 onRefresh: () => Provider.of<HomeVM>(context, listen: false).fetchData(),
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: <Widget>[
                     SliverAppBar(
-                      title: Text(AppStrings.appTitle, style: AppTextStyles.appTitle),
-                      actions: <Widget>[
-                        // Theme toggle button.
-                        Consumer<ThemeViewModel>(
-                          builder: (BuildContext context, ThemeViewModel theme, Widget? child) =>
-                              IconButton(
-                                icon: const Icon(Icons.dark_mode, size: 25),
-                                onPressed: theme.toggleTheme,
+                      titleSpacing: context.isDesktop ? 0 : null,
+                      toolbarHeight: context.isDesktop ? 92 : kToolbarHeight,
+                      title: ResponsiveContent(
+                        padding: EdgeInsets.zero,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(AppStrings.appTitle, style: AppTextStyles.appTitle),
+                                  if (context.isDesktop)
+                                    Text(
+                                      AppStrings.browseWallpapers,
+                                      style: Theme.of(context).textTheme.bodyMedium,
+                                    ),
+                                ],
                               ),
+                            ),
+                            Consumer<ThemeViewModel>(
+                              builder:
+                                  (BuildContext context, ThemeViewModel theme, Widget? child) =>
+                                      IconButton(
+                                        icon: const Icon(Icons.dark_mode, size: 25),
+                                        onPressed: theme.toggleTheme,
+                                      ),
+                            ),
+                          ],
                         ),
-                      ],
-                      centerTitle: true,
-                      pinned: false,
-                      floating: true,
+                      ),
+                      centerTitle: false,
+                      pinned: context.isDesktop,
+                      floating: !context.isDesktop,
                     ),
-                    // The grid of wallpapers.
                     const WallpaperGrid(),
                   ],
                 ),
               ),
             ),
-            // Positioned loading indicator at the bottom
             Consumer<HomeVM>(
               builder: (BuildContext context, HomeVM homeViewModel, Widget? child) {
                 if (homeViewModel.loadingMoreWallpapers) {
                   return Positioned(
-                    bottom: 0, // Position it at the bottom
+                    bottom: 0,
                     left: 0,
                     right: 0,
                     child: Container(
-                      padding: EdgeInsets.only(
-                        bottom: 20.h,
-                      ), // Add some padding from the bottom nav bar
+                      padding: EdgeInsets.only(bottom: context.isDesktop ? 28 : 20.h),
                       alignment: Alignment.center,
                       child: const CustomProgressIndicator.CustomProgressIndicator(),
                     ),

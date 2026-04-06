@@ -22,6 +22,13 @@ class CategoryScreen extends StatelessWidget {
     return Consumer2<HomeVM, CategoryVM>(
       builder: (BuildContext context, HomeVM homeNavViewModel, CategoryVM viewModel, Widget? child) {
         viewModel.ensureInitialized(homeNavViewModel);
+        final int crossAxisCount = context.isWideDesktop
+            ? 5
+            : context.isDesktop
+            ? 4
+            : context.isTablet
+            ? 3
+            : 2;
         return Scaffold(
           body: SafeArea(
             child: Stack(
@@ -35,80 +42,48 @@ class CategoryScreen extends StatelessWidget {
                       controller: viewModel.scrollController,
                       slivers: <Widget>[
                         SliverAppBar(
-                          centerTitle: true,
-                          floating: true,
-                          pinned: false,
-                          title: Text(AppStrings.appTitle, style: AppTextStyles.appTitle),
-                          actions: <Widget>[
-                            IconButton(
-                              icon: const Icon(Icons.filter_list),
-                              onPressed: () => viewModel.showCategoryFilterBottomSheet(context),
-                            ),
-                          ],
-                          bottom: PreferredSize(
-                            preferredSize: Size.fromHeight(70.h),
-                            child: Padding(
-                              padding: EdgeInsets.only(bottom: 8.h),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(0.r),
-                                child: Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                                  decoration: const BoxDecoration(
-                                    gradient: LinearGradient(
-                                      colors: <Color>[
-                                        AppColors.purple,
-                                        AppColors.pink,
-                                        AppColors.orange,
-                                      ],
-                                      begin: Alignment.centerLeft,
-                                      end: Alignment.centerRight,
-                                    ),
-                                  ),
-                                  child: SizedBox(
-                                    height: 52.h,
-                                    child: ListView.separated(
-                                      scrollDirection: Axis.horizontal,
-                                      itemCount: viewModel.filters.length,
-                                      separatorBuilder: (_, __) => SizedBox(width: 8.w),
-                                      itemBuilder: (BuildContext context, int index) {
-                                        final CategoryFilter filter = viewModel.filters[index];
-                                        final bool isSelected = filter == viewModel.selectedFilter;
-                                        const Color borderColor = Colors.white;
-                                        const Color textColor = Colors.white;
-
-                                        return InkWell(
-                                          onTap: () => viewModel.selectCategory(filter),
-                                          borderRadius: BorderRadius.circular(20),
-                                          child: Container(
-                                            alignment: Alignment.center,
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: 12.w,
-                                              vertical: 10.h,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(20.r),
-                                              border: Border.all(
-                                                color: borderColor.withOpacity(0.7),
-                                              ),
-                                              color: isSelected
-                                                  ? borderColor.withOpacity(0.3)
-                                                  : Colors.white.withOpacity(0.0),
-                                            ),
-                                            child: Text(
-                                              filter.label,
-                                              style: AppTextStyles.filterLabel.copyWith(
-                                                color: textColor,
-                                                fontSize: 13,
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
+                          centerTitle: false,
+                          floating: !context.isDesktop,
+                          pinned: context.isDesktop,
+                          toolbarHeight: context.isDesktop ? 88 : kToolbarHeight,
+                          titleSpacing: context.isDesktop ? 0 : null,
+                          title: ResponsiveContent(
+                            padding: EdgeInsets.zero,
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(AppStrings.categories, style: AppTextStyles.appTitle),
+                                      if (context.isDesktop)
+                                        Text(
+                                          AppStrings.exploreByCategory,
+                                          style: Theme.of(context).textTheme.bodyMedium,
+                                        ),
+                                    ],
                                   ),
                                 ),
-                              ),
+                                IconButton(
+                                  icon: const Icon(Icons.filter_list),
+                                  onPressed: () => viewModel.showCategoryFilterBottomSheet(context),
+                                ),
+                              ],
                             ),
+                          ),
+                        ),
+                        SliverToBoxAdapter(
+                          child: ResponsiveContent(
+                            padding: EdgeInsets.fromLTRB(
+                              context.contentHorizontalPadding,
+                              0,
+                              context.contentHorizontalPadding,
+                              context.isDesktop ? 20 : 8.h,
+                            ),
+                            child: context.isDesktop
+                                ? _DesktopCategoryFilters(viewModel: viewModel)
+                                : _MobileCategoryFilters(viewModel: viewModel),
                           ),
                         ),
                         Builder(
@@ -140,34 +115,39 @@ class CategoryScreen extends StatelessWidget {
                             }
 
                             return SliverPadding(
-                              padding: EdgeInsets.symmetric(horizontal: 2.w),
-                              sliver: SliverMasonryGrid(
-                                gridDelegate: const SliverSimpleGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
+                              padding: EdgeInsets.only(bottom: context.isDesktop ? 32 : 12.h),
+                              sliver: SliverToBoxAdapter(
+                                child: ResponsiveContent(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: context.contentHorizontalPadding,
+                                  ),
+                                  child: MasonryGridView.count(
+                                    shrinkWrap: true,
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    crossAxisCount: crossAxisCount,
+                                    mainAxisSpacing: context.isDesktop ? 16 : 5,
+                                    crossAxisSpacing: context.isDesktop ? 16 : 5,
+                                    itemCount: viewModel.wallpapers.length,
+                                    itemBuilder: (BuildContext context, int index) {
+                                      final WallhavenWallpaper wallpaper = viewModel.wallpapers[index];
+                                      final String heroTag =
+                                          'category-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
+                                      return Hero(
+                                        tag: heroTag,
+                                        child: GridItem(
+                                          wallpaper: wallpaper,
+                                          onTap: () => context.push(
+                                            AppRouter.wallpaperDetailNew,
+                                            extra: <String, Object?>{
+                                              'wallpaper': wallpaper,
+                                              'heroTag': heroTag,
+                                            },
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                mainAxisSpacing: 5,
-                                crossAxisSpacing: 5,
-                                delegate: SliverChildBuilderDelegate((
-                                  BuildContext context,
-                                  int index,
-                                ) {
-                                  final WallhavenWallpaper wallpaper = viewModel.wallpapers[index];
-                                  final String heroTag =
-                                      'category-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
-                                  return Hero(
-                                    tag: heroTag,
-                                    child: GridItem(
-                                      wallpaper: wallpaper,
-                                      onTap: () => context.push(
-                                        AppRouter.wallpaperDetailNew,
-                                        extra: <String, Object?>{
-                                          'wallpaper': wallpaper,
-                                          'heroTag': heroTag,
-                                        },
-                                      ),
-                                    ),
-                                  );
-                                }, childCount: viewModel.wallpapers.length),
                               ),
                             );
                           },
@@ -188,6 +168,210 @@ class CategoryScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _DesktopCategoryFilters extends StatelessWidget {
+  const _DesktopCategoryFilters({required this.viewModel});
+
+  final CategoryVM viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: <Color>[AppColors.purple, AppColors.pink, AppColors.orange],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              Expanded(
+                child: Text(
+                  AppStrings.exploreByCategory,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              if (viewModel.hasCustomSearch)
+                TextButton(
+                  onPressed: viewModel.clearSearch,
+                  child: const Text(
+                    AppStrings.clearSearch,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          TextField(
+            controller: viewModel.searchController,
+            onSubmitted: viewModel.applySearch,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: AppStrings.searchCategoriesHint,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: viewModel.hasCustomSearch
+                  ? IconButton(
+                      onPressed: viewModel.clearSearch,
+                      icon: const Icon(Icons.close),
+                    )
+                  : null,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: viewModel.filters.map((CategoryFilter filter) {
+              return _CategoryFilterChip(
+                label: filter.label,
+                isSelected: filter == viewModel.selectedFilter,
+                onTap: () => viewModel.selectCategory(filter),
+                isDesktop: true,
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MobileCategoryFilters extends StatelessWidget {
+  const _MobileCategoryFilters({required this.viewModel});
+
+  final CategoryVM viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: <Color>[AppColors.purple, AppColors.pink, AppColors.orange],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Column(
+        children: <Widget>[
+          TextField(
+            controller: viewModel.searchController,
+            onSubmitted: viewModel.applySearch,
+            textInputAction: TextInputAction.search,
+            decoration: InputDecoration(
+              hintText: AppStrings.searchCategories,
+              prefixIcon: const Icon(Icons.search),
+              suffixIcon: viewModel.hasCustomSearch
+                  ? IconButton(
+                      onPressed: viewModel.clearSearch,
+                      icon: const Icon(Icons.close),
+                    )
+                  : null,
+              isDense: true,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(18),
+                borderSide: BorderSide.none,
+              ),
+            ),
+          ),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 46,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: viewModel.filters.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 8),
+              itemBuilder: (BuildContext context, int index) {
+                final CategoryFilter filter = viewModel.filters[index];
+                return _CategoryFilterChip(
+                  label: filter.label,
+                  isSelected: filter == viewModel.selectedFilter,
+                  onTap: () => viewModel.selectCategory(filter),
+                  isDesktop: false,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CategoryFilterChip extends StatelessWidget {
+  const _CategoryFilterChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+    required this.isDesktop,
+  });
+
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+  final bool isDesktop;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
+          padding: EdgeInsets.symmetric(
+            horizontal: isDesktop ? 18 : 14,
+            vertical: isDesktop ? 12 : 10,
+          ),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(999),
+            color: isSelected ? Colors.white : Colors.white.withOpacity(0.12),
+            border: Border.all(
+              color: isSelected ? Colors.white : Colors.white.withOpacity(0.36),
+            ),
+            boxShadow: isSelected
+                ? <BoxShadow>[
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.12),
+                      blurRadius: 16,
+                      offset: const Offset(0, 6),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Text(
+            label,
+            style: AppTextStyles.filterLabel.copyWith(
+              color: isSelected ? AppColors.purple : Colors.white,
+              fontSize: isDesktop ? 14 : 13,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

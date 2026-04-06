@@ -25,9 +25,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   project.set_dart_entrypoint_arguments(std::move(command_line_arguments));
 
   FlutterWindow window(project);
-  Win32Window::Point origin(10, 10);
-  Win32Window::Size size(1280, 720);
-  if (!window.Create(L"wallify", origin, size)) {
+  const Win32Window::Size size(1440, 900);
+  const int screen_width = ::GetSystemMetrics(SM_CXSCREEN);
+  const int screen_height = ::GetSystemMetrics(SM_CYSCREEN);
+  const unsigned int origin_x =
+      screen_width > static_cast<int>(size.width)
+          ? static_cast<unsigned int>((screen_width - size.width) / 2)
+          : 0;
+  const unsigned int origin_y =
+      screen_height > static_cast<int>(size.height)
+          ? static_cast<unsigned int>((screen_height - size.height) / 2)
+          : 0;
+  Win32Window::Point origin(origin_x, origin_y);
+  if (!window.Create(L"Wallify", origin, size)) {
     return EXIT_FAILURE;
   }
   window.SetQuitOnClose(true);

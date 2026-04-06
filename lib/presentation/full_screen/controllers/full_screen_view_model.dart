@@ -31,6 +31,7 @@ class FullScreenVM extends ChangeNotifier {
   bool get isDownloading => detailViewModel.isDownloading;
   bool get isSettingWallpaper => detailViewModel.isSettingWallpaper;
   bool get isFavourite => favouriteViewModel.isFavourite(wallpaper);
+  bool get canSetWallpaper => detailViewModel.canSetWallpaper;
 
   // Initializes animations and zoom tracking with a ticker provider.
   void init(TickerProvider vsync) {
@@ -61,6 +62,10 @@ class FullScreenVM extends ChangeNotifier {
 
   // Opens the set-wallpaper sheet.
   void setWallpaper(BuildContext context) {
+    if (!detailViewModel.canSetWallpaper) {
+      detailViewModel.showWallpaperSettingUnavailableMessage();
+      return;
+    }
     showSetWallpaperBottomSheet(context, detailViewModel, wallpaper.path!);
   }
 

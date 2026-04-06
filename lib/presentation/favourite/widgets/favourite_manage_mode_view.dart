@@ -36,15 +36,26 @@ class FavouriteManageModeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int crossAxisCount = context.isWideDesktop
+        ? 5
+        : context.isDesktop
+        ? 4
+        : MediaQuery.of(context).size.width > 700
+        ? 3
+        : 2;
+
     return Column(
       children: <Widget>[
         Expanded(
           child: GridView.builder(
-            padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+            padding: EdgeInsets.symmetric(
+              horizontal: context.isDesktop ? 0 : 6.w,
+              vertical: context.isDesktop ? 0 : 2.h,
+            ),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: MediaQuery.of(context).size.width > 700 ? 3 : 2,
-              crossAxisSpacing: 8.w,
-              mainAxisSpacing: 8.h,
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: context.isDesktop ? 16 : 8.w,
+              mainAxisSpacing: context.isDesktop ? 16 : 8.h,
             ),
             itemCount: wallpapers.length,
             itemBuilder: (BuildContext context, int index) {

@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
+import 'package:wallify/infrastructure/utils/general_utils.dart';
+import 'package:wallify/infrastructure/utils/image_save_service.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 import 'package:wallpaper_manager_flutter/wallpaper_manager_flutter.dart';
 
@@ -40,11 +42,28 @@ class WallpaperDetailVM extends ChangeNotifier {
   bool isDownloading = false;
   bool isSettingWallpaper = false;
 
+  bool get canSetWallpaper => ImageSaveService.supportsWallpaperSetting;
+
+  Future<void> showWallpaperSettingUnavailableMessage() async {
+    await GeneralUtils.showToastMessage(
+      toastMsg: AppStrings.wallpaperSettingNotSupported,
+      isSuccess: false,
+      gravity: ToastGravity.CENTER,
+      backgroundColor: AppColors.red,
+      textColor: AppColors.white,
+    );
+  }
+
   // Sets the wallpaper on the device.
   // This method uses the `compute` function to run the wallpaper setting logic in a separate isolate.
   // This is done to prevent the app from restarting, which can happen on some Android devices
   // due to memory pressure when setting a wallpaper.
   Future<void> setWallpaper(String imageUrl, int location) async {
+    if (!canSetWallpaper) {
+      await showWallpaperSettingUnavailableMessage();
+      return;
+    }
+
     isSettingWallpaper = true;
     notifyListeners();
 
@@ -60,18 +79,18 @@ class WallpaperDetailVM extends ChangeNotifier {
         'token': token,
       });
 
-      Fluttertoast.showToast(
-        msg: AppStrings.wallpaperSetSuccessfully,
-        toastLength: Toast.LENGTH_SHORT,
+      await GeneralUtils.showToastMessage(
+        toastMsg: AppStrings.wallpaperSetSuccessfully,
+        isSuccess: true,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.green,
         textColor: AppColors.white,
       );
     } catch (e) {
       _loggerService.logError('Failed to set wallpaper: $e');
-      Fluttertoast.showToast(
-        msg: AppStrings.failedToSetWallpaper,
-        toastLength: Toast.LENGTH_SHORT,
+      await GeneralUtils.showToastMessage(
+        toastMsg: AppStrings.failedToSetWallpaper,
+        isSuccess: false,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,
         textColor: AppColors.white,
@@ -87,37 +106,59 @@ class WallpaperDetailVM extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final PermissionStatus status = await Permission.photos.request();
-      if (status.isGranted) {
+      if (ImageSaveService.supportsGallerySaving) {
+        final PermissionStatus status = await Permission.photos.request();
+        if (!status.isGranted) {
+          await GeneralUtils.showToastMessage(
+            toastMsg: AppStrings.storagePermissionDenied,
+            isSuccess: false,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: AppColors.red,
+            textColor: AppColors.white,
+          );
+          return;
+        }
+
         final bool? result = await GallerySaver.saveImage(
           imageUrl,
           albumName: _albumName,
           toDcim: false,
         );
 
-        Fluttertoast.showToast(
-          msg: result == true
+        await GeneralUtils.showToastMessage(
+          toastMsg: result == true
               ? AppStrings.wallpaperSavedSuccessfully
               : AppStrings.failedToSaveWallpaper,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
+          isSuccess: result == true,
           backgroundColor: result == true ? AppColors.green : AppColors.red,
           textColor: AppColors.white,
         );
-      } else {
-        Fluttertoast.showToast(
-          msg: AppStrings.storagePermissionDenied,
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.CENTER,
-          backgroundColor: AppColors.red,
+        return;
+      }
+
+      if (ImageSaveService.supportsLocalFileSaving) {
+        final File savedFile = await ImageSaveService.saveImageLocally(imageUrl);
+        await GeneralUtils.showToastMessage(
+          toastMsg: AppStrings.wallpaperSavedToPath(savedFile.path),
+          isSuccess: true,
+          backgroundColor: AppColors.green,
           textColor: AppColors.white,
         );
+        return;
       }
+
+      await GeneralUtils.showToastMessage(
+        toastMsg: AppStrings.wallpaperSavingNotSupported,
+        isSuccess: false,
+        gravity: ToastGravity.CENTER,
+        backgroundColor: AppColors.red,
+        textColor: AppColors.white,
+      );
     } catch (e) {
       _loggerService.logError('failed to save $e');
-      Fluttertoast.showToast(
-        msg: AppStrings.failedToSaveWallpaper,
-        toastLength: Toast.LENGTH_SHORT,
+      await GeneralUtils.showToastMessage(
+        toastMsg: AppStrings.failedToSaveWallpaper,
+        isSuccess: false,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,
         textColor: AppColors.white,

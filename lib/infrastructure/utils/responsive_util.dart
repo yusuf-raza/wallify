@@ -40,3 +40,63 @@ class Responsive {
     ResponsiveDimensions.setDesignSize(width: designWidth, height: designHeight);
   }
 }
+
+class ResponsiveBreakpoints {
+  static const double tablet = 768;
+  static const double desktop = 1100;
+  static const double wideDesktop = 1440;
+}
+
+extension ResponsiveContext on BuildContext {
+  Size get screenSize => MediaQuery.sizeOf(this);
+  bool get isTablet => screenSize.width >= ResponsiveBreakpoints.tablet;
+  bool get isDesktop => screenSize.width >= ResponsiveBreakpoints.desktop;
+  bool get isWideDesktop => screenSize.width >= ResponsiveBreakpoints.wideDesktop;
+
+  double get contentHorizontalPadding {
+    if (isWideDesktop) return 40;
+    if (isDesktop) return 28;
+    if (isTablet) return 20;
+    return 12;
+  }
+
+  double get contentMaxWidth {
+    if (isWideDesktop) return 1600;
+    if (isDesktop) return 1280;
+    if (isTablet) return 960;
+    return screenSize.width;
+  }
+}
+
+class ResponsiveContent extends StatelessWidget {
+  const ResponsiveContent({
+    super.key,
+    required this.child,
+    this.maxWidth,
+    this.padding,
+    this.alignment = Alignment.topCenter,
+  });
+
+  final Widget child;
+  final double? maxWidth;
+  final EdgeInsetsGeometry? padding;
+  final Alignment alignment;
+
+  @override
+  Widget build(BuildContext context) {
+    final double resolvedMaxWidth = maxWidth ?? context.contentMaxWidth;
+    final EdgeInsetsGeometry resolvedPadding =
+        padding ?? EdgeInsets.symmetric(horizontal: context.contentHorizontalPadding);
+
+    return Align(
+      alignment: alignment,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: resolvedMaxWidth),
+        child: Padding(
+          padding: resolvedPadding,
+          child: child,
+        ),
+      ),
+    );
+  }
+}

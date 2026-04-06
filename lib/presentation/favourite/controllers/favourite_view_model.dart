@@ -9,6 +9,8 @@ import 'package:wallify/data/models/wallhaven_wallpaper.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/constants/shared_prefs_keys.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
+import 'package:wallify/infrastructure/utils/general_utils.dart';
+import 'package:wallify/infrastructure/utils/image_save_service.dart';
 import 'package:wallify/infrastructure/utils/logger_service.dart';
 
 class FavouriteVM extends ChangeNotifier {
@@ -178,16 +180,29 @@ class FavouriteVM extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final PermissionStatus status = await Permission.photos.request();
-      if (!status.isGranted) {
-        Fluttertoast.showToast(
-          msg: AppStrings.storagePermissionDenied,
-          toastLength: Toast.LENGTH_SHORT,
+      if (!ImageSaveService.supportsGallerySaving && !ImageSaveService.supportsLocalFileSaving) {
+        await GeneralUtils.showToastMessage(
+          toastMsg: AppStrings.wallpaperSavingNotSupported,
+          isSuccess: false,
           gravity: ToastGravity.CENTER,
           backgroundColor: AppColors.red,
           textColor: AppColors.white,
         );
         return;
+      }
+
+      if (ImageSaveService.supportsGallerySaving) {
+        final PermissionStatus status = await Permission.photos.request();
+        if (!status.isGranted) {
+          await GeneralUtils.showToastMessage(
+            toastMsg: AppStrings.storagePermissionDenied,
+            isSuccess: false,
+            gravity: ToastGravity.CENTER,
+            backgroundColor: AppColors.red,
+            textColor: AppColors.white,
+          );
+          return;
+        }
       }
 
       int successCount = 0;
@@ -199,12 +214,17 @@ class FavouriteVM extends ChangeNotifier {
           continue;
         }
         try {
-          final bool? result = await GallerySaver.saveImage(
-            imageUrl,
-            albumName: _albumName,
-            toDcim: false,
-          );
-          if (result == true) {
+          if (ImageSaveService.supportsGallerySaving) {
+            final bool? result = await GallerySaver.saveImage(
+              imageUrl,
+              albumName: _albumName,
+              toDcim: false,
+            );
+            if (result == true) {
+              successCount++;
+            }
+          } else if (ImageSaveService.supportsLocalFileSaving) {
+            await ImageSaveService.saveImageLocally(imageUrl);
             successCount++;
           }
         } catch (e) {
@@ -217,19 +237,20 @@ class FavouriteVM extends ChangeNotifier {
 
       final String message = successCount == 0
           ? AppStrings.noWallpapersSaved
+          : ImageSaveService.supportsLocalFileSaving
+          ? AppStrings.savedWallpapersLocally(successCount)
           : AppStrings.savedWallpapers(successCount);
-      Fluttertoast.showToast(
-        msg: message,
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
+      await GeneralUtils.showToastMessage(
+        toastMsg: message,
+        isSuccess: successCount != 0,
         backgroundColor: successCount == 0 ? AppColors.red : AppColors.green,
         textColor: AppColors.white,
       );
     } catch (e) {
       _loggerService.logError('failed to save $e');
-      Fluttertoast.showToast(
-        msg: AppStrings.failedToSaveWallpaper,
-        toastLength: Toast.LENGTH_SHORT,
+      await GeneralUtils.showToastMessage(
+        toastMsg: AppStrings.failedToSaveWallpaper,
+        isSuccess: false,
         gravity: ToastGravity.CENTER,
         backgroundColor: AppColors.red,
         textColor: AppColors.white,

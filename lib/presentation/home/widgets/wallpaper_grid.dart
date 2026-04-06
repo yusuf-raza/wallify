@@ -18,19 +18,19 @@ class WallpaperGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    // Determine the number of columns based on the screen width.
     int crossAxisCount;
     if (screenWidth < 600) {
       crossAxisCount = 2;
     } else if (screenWidth < 900) {
       crossAxisCount = 3;
-    } else {
+    } else if (screenWidth < 1280) {
       crossAxisCount = 4;
+    } else {
+      crossAxisCount = 5;
     }
-    // Use a Consumer to listen for changes in the HomeViewModel.
+
     return Consumer<HomeVM>(
       builder: (BuildContext context, HomeVM homeViewModel, Widget? child) {
-        // Show a loading indicator while fetching initial wallpapers.
         if (homeViewModel.gettingWallpapers) {
           return const SliverFillRemaining(
             child: Center(child: CustomProgressIndicator.CustomProgressIndicator()),
@@ -54,33 +54,37 @@ class WallpaperGrid extends StatelessWidget {
             ),
           );
         }
-        // Display the wallpapers in a grid.
         return SliverPadding(
-          padding: EdgeInsets.symmetric(horizontal: 2.w),
-          sliver: SliverMasonryGrid(
-            gridDelegate: SliverSimpleGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
+          padding: EdgeInsets.only(bottom: context.isDesktop ? 32 : 12.h),
+          sliver: SliverToBoxAdapter(
+            child: ResponsiveContent(
+              padding: EdgeInsets.symmetric(horizontal: context.contentHorizontalPadding),
+              child: MasonryGridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: crossAxisCount,
+                mainAxisSpacing: context.isDesktop ? 16 : 5,
+                crossAxisSpacing: context.isDesktop ? 16 : 5,
+                itemCount: homeViewModel.wallpapers.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
+                  final String heroTag =
+                      'home-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
+                  return Hero(
+                    tag: heroTag,
+                    child: GridItem(
+                      wallpaper: wallpaper,
+                      onTap: () {
+                        context.push(
+                          AppRouter.wallpaperDetailNew,
+                          extra: <String, Object?>{'wallpaper': wallpaper, 'heroTag': heroTag},
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
             ),
-            mainAxisSpacing: 5,
-            crossAxisSpacing: 5,
-            delegate: SliverChildBuilderDelegate((BuildContext context, int index) {
-              final WallhavenWallpaper wallpaper = homeViewModel.wallpapers[index];
-              final String heroTag = 'home-${wallpaper.id ?? wallpaper.path ?? 'wallpaper'}-$index';
-              // Each item in the grid.
-              return Hero(
-                tag: heroTag,
-                child: GridItem(
-                  wallpaper: wallpaper,
-                  onTap: () {
-                    // Navigate to the wallpaper detail screen on tap.
-                    context.push(
-                      AppRouter.wallpaperDetailNew,
-                      extra: <String, Object?>{'wallpaper': wallpaper, 'heroTag': heroTag},
-                    );
-                  },
-                ),
-              );
-            }, childCount: homeViewModel.wallpapers.length),
           ),
         );
       },

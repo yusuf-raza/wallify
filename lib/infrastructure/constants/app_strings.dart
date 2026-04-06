@@ -17,7 +17,10 @@ class AppStrings {
   static const String noWallpapersFound = 'No wallpapers found.';
   static const String categories = 'Categories';
   static const String exploreByCategory = 'Explore by category';
+  static const String searchCategories = 'Search categories';
+  static const String searchCategoriesHint = 'Search custom category or keyword';
   static const String browseWallpapers = 'Browse wallpapers';
+  static const String clearSearch = 'Clear search';
   static const String download = 'Download';
   static const String downloadingEllipsis = 'Downloading...';
   static const String cancel = 'Cancel';
@@ -26,10 +29,15 @@ class AppStrings {
   static const String noInternetConnection = 'No Internet Connection';
   static const String storagePermissionDenied = 'Storage permission denied.';
   static const String wallpaperSavedSuccessfully = 'Wallpaper saved successfully!';
+  static const String wallpaperSavedLocally = 'Wallpaper saved locally.';
   static const String wallpaperSetSuccessfully = 'Wallpaper set successfully!';
   static const String failedToSaveWallpaper = 'Failed to save wallpaper.';
   static const String failedToSetWallpaper = 'Failed to set wallpaper.';
   static const String noWallpapersSaved = 'No wallpapers saved.';
+  static const String wallpaperSettingNotSupported =
+      'Setting wallpapers is only supported on Android.';
+  static const String wallpaperSavingNotSupported =
+      'Saving wallpapers is not supported on this platform.';
 
   static String downloadProgress(int completed, int total) {
     return 'Downloading $completed/$total';
@@ -45,6 +53,14 @@ class AppStrings {
 
   static String savedWallpapers(int count) {
     return 'Saved $count wallpapers.';
+  }
+
+  static String savedWallpapersLocally(int count) {
+    return 'Saved $count wallpapers locally.';
+  }
+
+  static String wallpaperSavedToPath(String path) {
+    return 'Saved wallpaper to $path';
   }
 
   static String wallpaperIndex(int index) {
