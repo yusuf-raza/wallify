@@ -34,7 +34,7 @@ class FullScreenActionBar extends StatelessWidget {
                     _ActionIcon(
                       icon: Icons.save_alt,
                       label: AppStrings.save,
-                      color: primaryColor,
+                      color: Colors.white,
                       isLoading: viewModel.isDownloading,
                       onTap: viewModel.saveWallpaper,
                     ),
@@ -49,13 +49,13 @@ class FullScreenActionBar extends StatelessWidget {
                     _ActionIcon(
                       icon: viewModel.isFavourite ? Icons.favorite : Icons.favorite_border,
                       label: viewModel.isFavourite ? 'Liked' : 'Like',
-                      color: primaryColor,
+                      color: Colors.white,
                       onTap: viewModel.toggleFavourite,
                     ),
                     _ActionIcon(
                       icon: Icons.share,
                       label: 'Share',
-                      color: primaryColor,
+                      color: Colors.white,
                       onTap: viewModel.shareWallpaper,
                     ),
                   ],

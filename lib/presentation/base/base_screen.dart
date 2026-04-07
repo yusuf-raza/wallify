@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:salomon_bottom_bar/salomon_bottom_bar.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
 import 'package:wallify/infrastructure/theme/app_colors.dart';
+import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 
@@ -69,6 +70,27 @@ class BaseScreen extends StatelessWidget {
                                   ),
                                 ],
                               ),
+                            ),
+                            Consumer<ThemeViewModel>(
+                              builder:
+                                  (
+                                    BuildContext context,
+                                    ThemeViewModel themeViewModel,
+                                    Widget? child,
+                                  ) => Padding(
+                                    padding: const EdgeInsets.fromLTRB(8, 12, 8, 0),
+                                    child: FilledButton.tonalIcon(
+                                      onPressed: themeViewModel.toggleTheme,
+                                      icon: Icon(
+                                        themeViewModel.isDarkMode
+                                            ? Icons.light_mode_outlined
+                                            : Icons.dark_mode_outlined,
+                                      ),
+                                      label: Text(
+                                        themeViewModel.isDarkMode ? 'Light mode' : 'Dark mode',
+                                      ),
+                                    ),
+                                  ),
                             ),
                           ],
                         ),

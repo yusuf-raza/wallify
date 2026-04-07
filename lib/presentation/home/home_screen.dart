@@ -3,8 +3,6 @@ import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:wallify/infrastructure/common/custom_circular_progress_indicator.dart';
 import 'package:wallify/infrastructure/constants/app_strings.dart';
-import 'package:wallify/infrastructure/theme/app_text_styles.dart';
-import 'package:wallify/infrastructure/theme/theme_view_model.dart';
 import 'package:wallify/infrastructure/utils/responsive_util.dart';
 import 'package:wallify/presentation/home/controllers/home_view_model.dart';
 import 'package:wallify/presentation/home/widgets/wallpaper_grid.dart';
@@ -38,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDesktop = context.isDesktop;
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -57,42 +57,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: CustomScrollView(
                   controller: _scrollController,
                   slivers: <Widget>[
-                    SliverAppBar(
-                      titleSpacing: context.isDesktop ? 0 : null,
-                      toolbarHeight: context.isDesktop ? 92 : kToolbarHeight,
-                      title: ResponsiveContent(
-                        padding: EdgeInsets.zero,
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: <Widget>[
-                                  Text(AppStrings.appTitle, style: AppTextStyles.appTitle),
-                                  if (context.isDesktop)
-                                    Text(
-                                      AppStrings.browseWallpapers,
-                                      style: Theme.of(context).textTheme.bodyMedium,
-                                    ),
-                                ],
-                              ),
-                            ),
-                            Consumer<ThemeViewModel>(
-                              builder:
-                                  (BuildContext context, ThemeViewModel theme, Widget? child) =>
-                                      IconButton(
-                                        icon: const Icon(Icons.dark_mode, size: 25),
-                                        onPressed: theme.toggleTheme,
-                                      ),
-                            ),
-                          ],
-                        ),
+                    if (!isDesktop)
+                      SliverAppBar(
+                        title:  Text(AppStrings.appTitle),
+                        centerTitle: false,
+                        floating: true,
                       ),
-                      centerTitle: false,
-                      pinned: context.isDesktop,
-                      floating: !context.isDesktop,
-                    ),
                     const WallpaperGrid(),
                   ],
                 ),

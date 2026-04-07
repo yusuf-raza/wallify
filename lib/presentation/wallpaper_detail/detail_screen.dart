@@ -24,6 +24,26 @@ class DetailScreen extends StatelessWidget {
   final LoggerService? loggerService;
   final String? heroTag;
 
+  String get _qualityBadgeLabel {
+    final int width = wallpaper.dimensionX ?? 0;
+    final int height = wallpaper.dimensionY ?? 0;
+    final int longestSide = width > height ? width : height;
+
+    if (longestSide >= 3840) {
+      return '4K';
+    }
+    if (longestSide >= 2560) {
+      return 'QHD';
+    }
+    if (longestSide >= 1920) {
+      return 'FHD';
+    }
+    if (longestSide >= 1280) {
+      return 'HD';
+    }
+    return 'SD';
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color primaryColor = fromHex(wallpaper.colors![0]);
@@ -195,6 +215,12 @@ class DetailScreen extends StatelessWidget {
               ],
             ),
             SizedBox(height: context.isDesktop ? 24 : 10.h),
+            _QualityBadge(
+              label: _qualityBadgeLabel,
+              resolution: '${wallpaper.dimensionX} x ${wallpaper.dimensionY}',
+              color: primaryColor,
+            ),
+            SizedBox(height: context.isDesktop ? 20 : 10.h),
             Column(
               children: <Widget>[
                 DetailInfoRow(
@@ -224,6 +250,57 @@ class DetailScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _QualityBadge extends StatelessWidget {
+  const _QualityBadge({
+    required this.label,
+    required this.resolution,
+    required this.color,
+  });
+
+  final String label;
+  final String resolution;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: color.withOpacity(0.28)),
+      ),
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(999),
+            ),
+            child: Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.labelLarge?.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Download quality • $resolution',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

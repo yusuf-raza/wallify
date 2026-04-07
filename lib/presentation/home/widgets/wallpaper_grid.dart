@@ -55,7 +55,10 @@ class WallpaperGrid extends StatelessWidget {
           );
         }
         return SliverPadding(
-          padding: EdgeInsets.only(bottom: context.isDesktop ? 32 : 12.h),
+          padding: EdgeInsets.only(
+            top: context.isDesktop ? 16 : 0,
+            bottom: context.isDesktop ? 32 : 12.h,
+          ),
           sliver: SliverToBoxAdapter(
             child: ResponsiveContent(
               padding: EdgeInsets.symmetric(horizontal: context.contentHorizontalPadding),

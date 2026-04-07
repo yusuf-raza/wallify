@@ -84,7 +84,13 @@ class _FullScreenImageScreenState extends State<FullScreenImageScreen>
                               fit: isDesktop ? BoxFit.cover : BoxFit.contain,
                               progressIndicatorBuilder:
                                   (BuildContext context, String url, DownloadProgress progress) =>
-                                      const CustomProgressIndicator.CustomProgressIndicator(),
+                                      const Center(
+                                        child: SizedBox(
+                                          width: 40,
+                                          height: 40,
+                                          child: CustomProgressIndicator.CustomProgressIndicator(),
+                                        ),
+                                      ),
                               errorWidget: (BuildContext context, String url, Object error) =>
                                   const Icon(Icons.error),
                             );

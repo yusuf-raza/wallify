@@ -41,29 +41,14 @@ class CategoryScreen extends StatelessWidget {
                     child: CustomScrollView(
                       controller: viewModel.scrollController,
                       slivers: <Widget>[
-                        SliverAppBar(
-                          centerTitle: false,
-                          floating: !context.isDesktop,
-                          pinned: context.isDesktop,
-                          toolbarHeight: context.isDesktop ? 88 : kToolbarHeight,
-                          titleSpacing: context.isDesktop ? 0 : null,
-                          title: ResponsiveContent(
-                            padding: EdgeInsets.zero,
-                            child: Row(
+                        if (!context.isDesktop)
+                          SliverAppBar(
+                            centerTitle: false,
+                            floating: true,
+                            title: Row(
                               children: <Widget>[
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text(AppStrings.categories, style: AppTextStyles.appTitle),
-                                      if (context.isDesktop)
-                                        Text(
-                                          AppStrings.exploreByCategory,
-                                          style: Theme.of(context).textTheme.bodyMedium,
-                                        ),
-                                    ],
-                                  ),
+                                  child: Text(AppStrings.categories),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.filter_list),
@@ -72,12 +57,11 @@ class CategoryScreen extends StatelessWidget {
                               ],
                             ),
                           ),
-                        ),
                         SliverToBoxAdapter(
                           child: ResponsiveContent(
                             padding: EdgeInsets.fromLTRB(
                               context.contentHorizontalPadding,
-                              0,
+                              context.isDesktop ? 16 : 0,
                               context.contentHorizontalPadding,
                               context.isDesktop ? 20 : 8.h,
                             ),

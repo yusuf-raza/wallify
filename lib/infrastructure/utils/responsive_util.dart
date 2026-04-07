@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 extension ResponsiveDimensions on num {
@@ -49,8 +50,13 @@ class ResponsiveBreakpoints {
 
 extension ResponsiveContext on BuildContext {
   Size get screenSize => MediaQuery.sizeOf(this);
+  bool get isDesktopPlatform =>
+      !kIsWeb &&
+      (defaultTargetPlatform == TargetPlatform.macOS ||
+          defaultTargetPlatform == TargetPlatform.windows ||
+          defaultTargetPlatform == TargetPlatform.linux);
   bool get isTablet => screenSize.width >= ResponsiveBreakpoints.tablet;
-  bool get isDesktop => screenSize.width >= ResponsiveBreakpoints.desktop;
+  bool get isDesktop => isDesktopPlatform || screenSize.width >= ResponsiveBreakpoints.desktop;
   bool get isWideDesktop => screenSize.width >= ResponsiveBreakpoints.wideDesktop;
 
   double get contentHorizontalPadding {
